@@ -93,7 +93,7 @@ package cn.flashk.controls
 			_textField.setTextFormat(_textFormat);
 			if(_textField.textWidth>_compoWidth-2)
 			{
-				setSize(_textField.textWidth+2,_compoHeight);
+				setSize(_textField.textWidth+5,_textField.textHeight+10);
 			}
 		}
 		

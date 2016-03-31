@@ -1,5 +1,14 @@
 package cn.flashk.controls
 {
+	import flash.display.Bitmap;
+	import flash.display.DisplayObject;
+	import flash.display.Loader;
+	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.net.URLRequest;
+	import flash.system.LoaderContext;
+	import flash.utils.ByteArray;
+	
 	import cn.flashk.controls.managers.SkinLoader;
 	import cn.flashk.controls.managers.SkinManager;
 	import cn.flashk.controls.managers.SkinThemeColor;
@@ -12,15 +21,6 @@ package cn.flashk.controls
 	import cn.flashk.controls.skin.sourceSkin.SourceSkin;
 	import cn.flashk.controls.support.ColorConversion;
 	import cn.flashk.controls.support.UIComponent;
-	
-	import flash.display.Bitmap;
-	import flash.display.DisplayObject;
-	import flash.display.Loader;
-	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.net.URLRequest;
-	import flash.system.LoaderContext;
-	import flash.utils.ByteArray;
 
 	/**
 	 * ScrollPane 组件在一个可滚动区域中呈现显示对象和 JPEG、GIF 与 PNG 文件，以及 SWF 文件。 可以使用滚动窗格来限制这些媒体类型所占用的屏幕区域。
@@ -37,6 +37,8 @@ package cn.flashk.controls
 		protected var _scrollDrag:Boolean = true;
 		protected var _isNeedClip:Boolean = true;
 		protected var _imageSmooth:Boolean
+		protected var _viewWidth:Number=-1;
+		protected var _viewHeight:Number=-1;
 		
 		public function ScrollPane(skinSet:ScrollBarSkinSet=null)
 		{
@@ -192,6 +194,9 @@ package cn.flashk.controls
 			_hscrollBar.setSize(VScrollBar.defaultWidth,_compoWidth-VScrollBar.defaultWidth);
 			if(_isNeedClip == false) return;
 			resetTarget();
+			if(_viewWidth !=-1 && _viewHeight != -1){
+				updateViewSize(_viewWidth,_viewHeight);
+			}
 		}
 		
 		/**
@@ -235,6 +240,13 @@ package cn.flashk.controls
 			if(viewHeight == -1) viewHeight = _box.height;
 			_vscrollBar.updateSize(viewHeight-1);
 			_hscrollBar.updateSize(viewWidth-1);
+			_viewWidth = viewWidth;
+			_viewHeight = viewHeight;
+			if(viewWidth<=_hscrollBar.compoHeight){
+				_hscrollBar.visible = false;
+			}else{
+				_hscrollBar.visible = true;
+			}
 		}
 		
 	}

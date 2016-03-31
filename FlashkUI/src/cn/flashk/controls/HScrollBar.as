@@ -30,6 +30,9 @@ package cn.flashk.controls
 		override protected function updateMaxPos():void 
 		{
 			maxPos = (targetHeight - clipWidth);
+			if(maxPos<0){
+				maxPos = 0;
+			}
 		}
 		
 		override protected function getRectPos():Number 

@@ -1,5 +1,12 @@
 package cn.flashk.controls
 {
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	import flash.geom.Point;
+	import flash.text.TextField;
+	import flash.text.TextFieldType;
+	import flash.text.TextFormat;
+	
 	import cn.flashk.controls.managers.DefaultStyle;
 	import cn.flashk.controls.managers.SkinLoader;
 	import cn.flashk.controls.managers.SkinManager;
@@ -13,13 +20,6 @@ package cn.flashk.controls
 	import cn.flashk.controls.support.ColorConversion;
 	import cn.flashk.controls.support.UIComponent;
 	
-	import flash.events.Event;
-	import flash.events.MouseEvent;
-	import flash.geom.Point;
-	import flash.text.TextField;
-	import flash.text.TextFieldType;
-	import flash.text.TextFormat;
-
 	/**
 	 * ComboBox 组件包含一个下拉列表，用户可以从该列表中选择单个值。 其功能与 HTML 中的 SELECT 表单元素的功能相似。 ComboBox 组件可以是可编辑的，在这种情况下，用户可以在 ComboBox 组件的 TextInput 部分键入不在列表中的条目。 。
 	 *
@@ -30,7 +30,7 @@ package cn.flashk.controls
 	 *
 	 * @author flashk
 	 */
-
+	
 	public class ComboBox extends UIComponent
 	{
 		protected var _list:List;
@@ -40,11 +40,12 @@ package cn.flashk.controls
 		protected var tf:TextFormat;
 		protected var initIndex:int;
 		protected var _dataProvider:DataProvider;
-
+		protected var _isPopAtTop:Boolean = false;
+		
 		public function ComboBox(skinSet:ScrollBarSkinSet=null)
 		{
 			super();
-
+			
 			_compoWidth=120;
 			_compoHeight=21;
 			new ButtonStyle(styleSet);
@@ -66,7 +67,41 @@ package cn.flashk.controls
 			this.addChild(txt);
 			setSize(_compoWidth - 2, _compoHeight);
 		}
-
+		
+		/**
+		 * 检索指定索引处的项目。 
+		 * 
+		 * @param index 要检索的项目的索引。
+		 * @return 位于指定索引位置处的对象。
+		 */ 
+		public function getItemAt(index:uint):Object
+		{
+			return _list.getItemAt(index);
+		}
+		
+		public function get isPopAtTop():Boolean
+		{
+			return _isPopAtTop;
+		}
+		
+		/**
+		 * 获取数据提供者中的项目数（List的总长度）。
+		 */ 
+		public function get length():uint
+		{
+			return _list.length;
+		}
+		
+		/**
+		 * 是否弹出List永远在上方位置弹出，默认false(根据所处位置自动选择，下方优先) 
+		 * @param value
+		 * 
+		 */
+		public function set isPopAtTop(value:Boolean):void
+		{
+			_isPopAtTop = value;
+		}
+		
 		override protected function updateSkinBefore():void
 		{
 			styleSet[ButtonStyle.DEFAULT_SKIN_ELLIPSE_WIDTH]=DefaultStyle.ellipse;
@@ -74,7 +109,7 @@ package cn.flashk.controls
 			styleSet[ButtonStyle.DEFAULT_SKIN_ELLIPSE_BOTTOM_WIDTH]=DefaultStyle.ellipse;
 			styleSet[ButtonStyle.DEFAULT_SKIN_ELLIPSE_BOTTOM_HEIGHT]=DefaultStyle.ellipse;
 		}
-
+		
 		/**
 		 * 设置ComboBox的数据源，它应该是个DataProvider对象（可以直接将二维数组转为DataProvider，请参见DataProvider构造函数）
 		 *
@@ -85,22 +120,25 @@ package cn.flashk.controls
 			_dataProvider=value;
 			_list.dataProvider=_dataProvider;
 		}
-
+		
 		public function get dataProvider():DataProvider
 		{
 			return _dataProvider;
 		}
-
+		
 		protected function setSelectLabel(event:Event = null):void
 		{
-			txt.text=_list.getItemAt(initIndex).label;
+			var obj:Object = _list.getItemAt(initIndex);
+			if(obj){
+				txt.text=obj.label;
+			}
 		}
-
+		
 		public function get editable():Boolean
 		{
 			return _editable;
 		}
-
+		
 		/**
 		 * 获取或设置一个布尔值，该值指示 ComboBox 组件为可编辑还是只读。
 		 */
@@ -109,17 +147,17 @@ package cn.flashk.controls
 			_editable=value;
 			txt.mouseEnabled=_editable;
 		}
-
+		
 		public function get selectedItem():Object
 		{
 			return _list.selectedItem;
 		}
-
+		
 		public function get selectItemValue():*
 		{
 			return _list.selectItemValue;
 		}
-
+		
 		/**
 		 * 获取或设置下拉列表中所选项目的值。
 		 */
@@ -127,12 +165,12 @@ package cn.flashk.controls
 		{
 			_list.selectedItem=value;
 		}
-
+		
 		public function get selectedIndex():uint
 		{
 			return _list.selectedIndex;
 		}
-
+		
 		/**
 		 * 获取或设置单选列表中的选定项目的索引。
 		 */
@@ -141,12 +179,12 @@ package cn.flashk.controls
 			initIndex=value;
 			_list.selectedIndex=value;
 		}
-
+		
 		public function get text():String
 		{
 			return txt.text;
 		}
-
+		
 		/**
 		 * 获取或设置可编辑 ComboBox 组件中文本框所包含的文本。
 		 */
@@ -155,7 +193,7 @@ package cn.flashk.controls
 			txt.text=value;
 			txt.setTextFormat(tf);
 		}
-
+		
 		/**
 		 * 获取对 ComboBox 组件所包含的 TextInput 组件的引用。
 		 */
@@ -163,12 +201,12 @@ package cn.flashk.controls
 		{
 			return txt;
 		}
-
+		
 		public function get restrict():String
 		{
 			return txt.restrict;
 		}
-
+		
 		/**
 		 * 获取或设置用户可以在文本字段中输入的字符。
 		 */
@@ -176,7 +214,7 @@ package cn.flashk.controls
 		{
 			txt.restrict=value;
 		}
-
+		
 		/**
 		 * 获取对 ComboBox 组件所包含的 _list 组件的引用。
 		 */
@@ -184,12 +222,12 @@ package cn.flashk.controls
 		{
 			return _list;
 		}
-
+		
 		public function get rowCount():uint
 		{
 			return _rowCount;
 		}
-
+		
 		/**
 		 * 获取或设置没有滚动条的下拉列表中可显示的最大行数。
 		 */
@@ -198,7 +236,7 @@ package cn.flashk.controls
 			_rowCount=value;
 			_list.setSize(_compoWidth, _rowCount * List.defaultItemHeight + 2);
 		}
-
+		
 		protected function updateSelect(event:Event):void
 		{
 			if (_list.parent == this.stage && this.stage != null)
@@ -209,7 +247,7 @@ package cn.flashk.controls
 			txt.text=_list.selectedItem.label;
 			this.dispatchEvent(event.clone());
 		}
-
+		
 		public function addItem(item:Object):void
 		{
 			_list.addItem(item);
@@ -218,12 +256,12 @@ package cn.flashk.controls
 				setSelectLabel();
 			}
 		}
-
+		
 		public function get snapNum():Number
 		{
 			return _list.snapNum;
 		}
-
+		
 		/**
 		 * 滚动的间隔，默认为2px，可以设定为默认渲染器的行高以对其，默认渲染器的行高为23
 		 * @param value
@@ -233,7 +271,7 @@ package cn.flashk.controls
 		{
 			_list.snapNum=value;
 		}
-
+		
 		public function addItemAt(item:Object, index:uint):void
 		{
 			_list.addItemAt(item, index);
@@ -242,27 +280,27 @@ package cn.flashk.controls
 				setSelectLabel();
 			}
 		}
-
+		
 		public function removeItemAt(index:uint):void
 		{
 			_list.removeItemAt(index);
 		}
-
+		
 		public function removeAll():void
 		{
 			_list.removeAll();
 		}
-
+		
 		override public function setDefaultSkin():void
 		{
 			setSkin(ComboBoxSkin);
 		}
-
+		
 		override public function setSourceSkin():void
 		{
 			setSkin(SkinLoader.getClassFromSkinFile(SourceSkinLinkDefine.COMBO_BOX));
 		}
-
+		
 		override public function setSkin(Skin:Class):void
 		{
 			if (SkinManager.isUseDefaultSkin == true)
@@ -277,7 +315,7 @@ package cn.flashk.controls
 				skin=sous;
 			}
 		}
-
+		
 		override public function setSize(newWidth:Number, newHeight:Number):void
 		{
 			super.setSize(newWidth, newHeight);
@@ -291,13 +329,18 @@ package cn.flashk.controls
 			txt.width=compoWidth - _compoHeight - txt.x;
 			txt.y=int((_compoHeight - txt.height) / 2);
 		}
-
+		
 		protected function initMouseEvents():void
 		{
 			skin.skinDisplayObject.addEventListener(MouseEvent.CLICK, open_list);
 		}
-
-		protected function open_list(event:MouseEvent):void
+		
+		public function switchListOpenClose():void
+		{
+			open_list();
+		}
+		
+		protected function open_list(event:MouseEvent=null):void
 		{
 			if (_list.length == 0)
 				return;
@@ -313,15 +356,29 @@ package cn.flashk.controls
 			var po:Point=this.localToGlobal(new Point(0, _compoHeight + 1));
 			_list.x=int(po.x);
 			_list.y=po.y;
-			if (_list.y + _list.compoHeight > this.stage.stageHeight)
+			if (_isPopAtTop == true || _list.y + _list.compoHeight > this.stage.stageHeight)
 			{
 				_list.y=po.y - _compoHeight - _list.compoHeight - 1;
 			}
 			this.stage.addEventListener(MouseEvent.MOUSE_DOWN, checkRemove_list);
+			this.stage.addEventListener(Event.RESIZE,onStageResize);
 		}
-
+		
+		protected function onStageResize(event:Event):void
+		{
+			if(_list.parent){
+				_list.parent.removeChild(_list);
+				if(this.stage){
+					this.stage.removeEventListener(Event.RESIZE,onStageResize);
+				}
+			}
+		}
+		
 		private function checkRemove_list(event:MouseEvent):void
 		{
+			if(UIComponent.stage == null) return;
+			if(this.hitTestPoint( UIComponent.stage.mouseX,UIComponent.stage.mouseY) == true) return;
+			
 			if (_list.mouseX < -5 || _list.mouseY <= -5 - _compoHeight || _list.mouseX > _list.compoWidth + 5 || _list.mouseY > _list.compoHeight + 5)
 			{
 				UIComponent.stage.removeEventListener(MouseEvent.MOUSE_DOWN, checkRemove_list);
@@ -330,6 +387,6 @@ package cn.flashk.controls
 				}
 			}
 		}
-
+		
 	}
 }

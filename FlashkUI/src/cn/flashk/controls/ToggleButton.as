@@ -29,12 +29,24 @@ package cn.flashk.controls
 	public class ToggleButton extends Button
 	{
 		protected var _selected:Boolean;
+		protected var _isAbleuserChange:Boolean = true;
 		
 		public function ToggleButton() 
 		{
 			super();
 			this.addEventListener(MouseEvent.CLICK, switchSelect);
 		}
+
+		public function get isAbleuserChange():Boolean
+		{
+			return _isAbleuserChange;
+		}
+
+		public function set isAbleuserChange(value:Boolean):void
+		{
+			_isAbleuserChange = value;
+		}
+
 		/**
 		 * 设置/获取按钮是否处于选中状态
 		 */ 
@@ -51,6 +63,7 @@ package cn.flashk.controls
 		}
 		
 		protected function switchSelect(event:MouseEvent):void {
+			if(_isAbleuserChange == false) return;
 			selected = !_selected;
 		}
 		

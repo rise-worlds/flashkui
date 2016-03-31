@@ -49,6 +49,7 @@ package cn.flashk.controls
 		protected var _showDragSpace:Boolean = true;
 		protected var _skinLinkage:String;
 		protected var _asSkinClass:Class;
+		protected var _value:Number;
 		
 		public function Slider(skinLinkage:String="",asSkinClass:Class=null)
 		{
@@ -129,6 +130,7 @@ package cn.flashk.controls
 		
 		public function set value(num:Number):void{
 			var a:Number = (num-minimum)/maximum;
+			_value = num;
 			if(a>1) a = 1;
 			if(a<0) a=0;
 			slider1.x = _compoWidth*a;
@@ -405,6 +407,11 @@ package cn.flashk.controls
 			{
 				this.dispatchEvent(new Event(Event.CHANGE));
 			}
+		}
+		
+		override public function setSize(newWidth:Number, newHeight:Number):void
+		{
+			super.setSize(newWidth,newHeight);
 		}
 		
 	}

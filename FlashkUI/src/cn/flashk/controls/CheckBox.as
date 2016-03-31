@@ -26,7 +26,8 @@ package cn.flashk.controls
 	 */
 	public class CheckBox extends ToggleButton
 	{
-	
+		public static var allDefaultHeight:int = 19;
+		
 		public function CheckBox(skinLinkage:String="",asSkinClass:Class=null) 
 		{
 			_skinLinkage = skinLinkage;
@@ -39,6 +40,8 @@ package cn.flashk.controls
 			}
 			_isInitSkin = true;
 			super();
+			_compoHeight = allDefaultHeight;
+			setSize(_compoWidth,_compoHeight);
 			label = "多选";
 			styleSet[ ButtonStyle.TEXT_COLOR ] = DefaultStyle.checkBoxTextColor;
 			styleSet[ ButtonStyle.TEXT_OVER_COLOR ] = DefaultStyle.checkBoxTextOverColor;

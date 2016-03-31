@@ -1,5 +1,6 @@
-package cn.flashk.controls
+﻿package cn.flashk.controls
 {
+	import cn.flashk.controls.events.UIComponentEvent;
 	import cn.flashk.controls.layout.Align;
 	import cn.flashk.controls.managers.SkinLoader;
 	import cn.flashk.controls.managers.SkinManager;
@@ -20,6 +21,7 @@ package cn.flashk.controls
 	import flash.geom.Rectangle;
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
+	import flash.utils.ByteArray;
 	
 	/**
 	 * 图像和边框的边距，默认3px，单位：像素
@@ -102,6 +104,11 @@ package cn.flashk.controls
         {
             return _bp;
         }
+		
+		public function get bitmapData():BitmapData
+		{
+			return _bp.bitmapData;
+		}
 
 		/**
 		 * Image 图像的源，可以是一个外部文件、库链接或者原始的BitmapData二进制数据
@@ -111,11 +118,15 @@ package cn.flashk.controls
 		public function set source(value:Object):void
 		{
 			_source = value;
-			if(value is String)
+			if(_source == null){
+				if(_bp && _bp.parent)
+				{
+					_bp.parent.removeChild(_bp);
+				}
+			}else if(value is String)
 			{
 				loadFile(_source as String);
-			}
-			if(value is Class)
+			}else if(value is Class)
 			{
 				var bd:BitmapData = new value() as BitmapData;
 				if(bd != null)
@@ -128,8 +139,7 @@ package cn.flashk.controls
 					this.addChild(_bp);
 					alignBP();
 				}
-			}
-			if(value is BitmapData)
+			}else if(value is BitmapData)
 			{
                 if(_bp && _bp.parent)
                 {
@@ -138,8 +148,29 @@ package cn.flashk.controls
 				_bp = new Bitmap(value as BitmapData);
 				this.addChild(_bp);
 				alignBP();
+			}else if(value is ByteArray){
+				if(_imageLoader==null){
+					_imageLoader = new Loader();
+					_imageLoader.contentLoaderInfo.addEventListener(Event.COMPLETE,onImageFileDecodeOK);
+				}
+				_imageLoader.loadBytes(_source as ByteArray);
 			}
+			this.dispatchEvent(new Event(UIComponentEvent.SOURCE_CHANGE));
 		}
+		
+		protected function onImageFileDecodeOK(event:Event):void
+		{
+			if(_bp && _bp.parent)
+			{
+				_bp.parent.removeChild(_bp);
+			}
+			_bp = new Bitmap(Bitmap(_imageLoader.content).bitmapData as BitmapData);
+			this.addChild(_bp);
+			alignBP();
+			this.dispatchEvent(new Event(Event.COMPLETE));
+		}
+		
+		private var _imageLoader:Loader;
 		
 		/**
 		 * 清除图像数据，设置为空。 

@@ -1,17 +1,5 @@
 package cn.flashk.controls 
 {
-	import cn.flashk.controls.managers.DefaultStyle;
-	import cn.flashk.controls.managers.SkinLoader;
-	import cn.flashk.controls.managers.SkinManager;
-	import cn.flashk.controls.managers.SourceSkinLinkDefine;
-	import cn.flashk.controls.managers.UISet;
-	import cn.flashk.controls.modeStyles.ButtonMode;
-	import cn.flashk.controls.modeStyles.ButtonStyle;
-	import cn.flashk.controls.skin.ActionDrawSkin;
-	import cn.flashk.controls.skin.ButtonSkin;
-	import cn.flashk.controls.skin.sourceSkin.ButtonSourceSkin;
-	import cn.flashk.controls.support.ColorConversion;
-	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.BlendMode;
@@ -23,6 +11,18 @@ package cn.flashk.controls
 	import flash.text.TextFormatAlign;
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
+	
+	import cn.flashk.controls.managers.DefaultStyle;
+	import cn.flashk.controls.managers.SkinLoader;
+	import cn.flashk.controls.managers.SkinManager;
+	import cn.flashk.controls.managers.SourceSkinLinkDefine;
+	import cn.flashk.controls.managers.UISet;
+	import cn.flashk.controls.modeStyles.ButtonMode;
+	import cn.flashk.controls.modeStyles.ButtonStyle;
+	import cn.flashk.controls.skin.ActionDrawSkin;
+	import cn.flashk.controls.skin.ButtonSkin;
+	import cn.flashk.controls.skin.sourceSkin.ButtonSourceSkin;
+	import cn.flashk.controls.support.ColorConversion;
 	
 	/**
 	 * 设置按钮文本的颜色（默认和鼠标划出）
@@ -168,12 +168,8 @@ package cn.flashk.controls
 	 */
 	public class Button extends GraphicSkinButton
 	{
-		/**
-		 * 设置按钮显示是否使用皮肤默认的大小，设置此属性为true将忽略setSize方法而一直使用皮肤定义的大小1:1显示，并且关闭九宫格缩放，但按钮的compoWidth和compoHeight值仍然是setSize传递的值。
-		 * 设置此值可以在不知道皮肤按钮大小的情况下使用，只影响皮肤的显示。
-		 */ 
-		public static var defaultHeihgt:Number = 19;
-		public static var defaultWidth:Number = 69;
+		private static var _defaultHeihgt:Number = 19;
+		private static var _defaultWidth:Number = 69;
 		
 		public var useSkinSize:Boolean = false;
 		
@@ -249,6 +245,33 @@ package cn.flashk.controls
 			this.cacheAsBitmap = UISet.buttonCatchAsBitmap;
 		}
 		
+		/**
+		 * 设置按钮显示是否使用皮肤默认的大小，设置此属性为true将忽略setSize方法而一直使用皮肤定义的大小1:1显示，并且关闭九宫格缩放，但按钮的compoWidth和compoHeight值仍然是setSize传递的值。
+		 * 设置此值可以在不知道皮肤按钮大小的情况下使用，只影响皮肤的显示。
+		 */
+		public static function get defaultHeihgt():Number
+		{
+			return _defaultHeihgt;
+		}
+
+		/**
+		 * @private
+		 */
+		public static function set defaultHeihgt(value:Number):void
+		{
+			_defaultHeihgt = value;
+		}
+
+		public static function get defaultWidth():Number
+		{
+			return _defaultWidth;
+		}
+
+		public static function set defaultWidth(value:Number):void
+		{
+			_defaultWidth = value;
+		}
+
 		public function get isAutoCheckTextSizeAndResetSize():Boolean
 		{
 			return _isAutoCheckTextSizeAndResetSize;

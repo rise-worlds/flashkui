@@ -8,6 +8,7 @@ package cn.flashk.controls.events
 		public static const SCROLL:String = "scroll";
 		public static const SCROLL_BAR_START_DRAG:String = "scrollBarStartDrag";
 		public static const SCROLL_BAR_STOP_DRAG:String = "scrollBarStopDrag";
+		public static const SOURCE_CHANGE:String = "sourceChange";
 		
 		public function UIComponentEvent(type:String)
 		{

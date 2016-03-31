@@ -28,7 +28,7 @@ package cn.flashk.controls.tools
 		 * @param callFunction 要调用的函数
 		 * 
 		 */
-		public function MouseDownKeepCall(targetButton:InteractiveObject,callFunction:Function,frameSpace:int=1)
+		public function MouseDownKeepCall(targetButton:InteractiveObject,callFunction:Function,frameSpace:int=3)
 		{
 			_btn = targetButton;
 			_fun = callFunction;

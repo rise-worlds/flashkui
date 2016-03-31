@@ -1,5 +1,14 @@
 ﻿package cn.flashk.controls
 {
+	import flash.display.DisplayObject;
+	import flash.display.InteractiveObject;
+	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
+	import flash.geom.Point;
+	import flash.utils.getTimer;
+	
 	import cn.flashk.controls.events.CustomEvent;
 	import cn.flashk.controls.interfaces.IListItemRender;
 	import cn.flashk.controls.managers.SkinLoader;
@@ -7,6 +16,7 @@
 	import cn.flashk.controls.managers.SkinThemeColor;
 	import cn.flashk.controls.managers.SourceSkinLinkDefine;
 	import cn.flashk.controls.managers.StyleManager;
+	import cn.flashk.controls.managers.UISet;
 	import cn.flashk.controls.modeStyles.ScrollBarSkinSet;
 	import cn.flashk.controls.proxy.DataProvider;
 	import cn.flashk.controls.skin.ActionDrawSkin;
@@ -17,14 +27,6 @@
 	import cn.flashk.controls.support.ItemsSelectControl;
 	import cn.flashk.controls.support.ListItemRender;
 	import cn.flashk.controls.support.UIComponent;
-	
-	import flash.display.DisplayObject;
-	import flash.display.InteractiveObject;
-	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.events.KeyboardEvent;
-	import flash.events.MouseEvent;
-	import flash.utils.getTimer;
 	
 	/**
 	 * 当List的selectIndex值改变时触发
@@ -99,6 +101,7 @@
 		protected var _isRemoveDestory:Boolean = true;
 		protected var _itemDoubleClickEnabled:Boolean = false;
 		protected var boxSelectControler:ItemsSelectControl;
+		protected var mouseDownPoint:Point = new Point();
 		
 		/**
 		 * 
@@ -138,8 +141,15 @@
 			this.addEventListener(MouseEvent.CLICK,checkSelectNone);
 			this.addEventListener(Event.ADDED_TO_STAGE,addKeyLis);
 			this.addEventListener(Event.REMOVED_FROM_STAGE,clearLis);
+			this.addEventListener(MouseEvent.MOUSE_DOWN,onMeMouseDown);
 		}
-
+		
+		protected function onMeMouseDown(event:MouseEvent):void
+		{
+			mouseDownPoint.x = this.mouseX;
+			mouseDownPoint.y = this.mouseY;
+		}
+		
 		public function get itemDoubleClickEnabled():Boolean
 		{
 			return _itemDoubleClickEnabled;
@@ -416,6 +426,7 @@
 		 */ 
 		public function get selectedItem():Object
 		{
+			if(_selectedIndex<0) return null;
 			return IListItemRender(items.getChildAt(_selectedIndex)).data;
 		}
 		
@@ -701,6 +712,7 @@
 		 */ 
 		public function getItemAt(index:uint):Object
 		{
+			if(index <= -1 || index > items.numChildren-1) return null;
 			return IListItemRender(items.getChildAt(index)).data;
 		}
 		
@@ -765,6 +777,10 @@
 		
 		protected function itemClick(event:Object):void
 		{
+			if(UIComponent.isMobile == true){
+				if(Math.abs(this.mouseX - mouseDownPoint.x) > UISet.mobileMouseError) return;
+				if(Math.abs(this.mouseY - mouseDownPoint.y) > UISet.mobileMouseError) return;
+			}
 			var render:DisplayObject;
 			if(_allowMultipleSelection == false || UIComponent.isCtrlKeyDown == false)
 			{

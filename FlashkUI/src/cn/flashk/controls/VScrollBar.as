@@ -11,6 +11,7 @@ package cn.flashk.controls
 	import cn.flashk.controls.skin.VScrollBarSkin;
 	import cn.flashk.controls.skin.sourceSkin.VScrollBarSourceSkin;
 	import cn.flashk.controls.support.UIComponent;
+	import cn.flashk.ui.UI;
 	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
@@ -150,16 +151,10 @@ package cn.flashk.controls
 			this.addEventListener(Event.ADDED_TO_STAGE,checkText);
 			this.addEventListener(MouseEvent.MOUSE_WHEEL,mouseWellScroll);
 			hideArrow = UISet.isScrollBarHideArrow;
-		}
-
-		/**
-		 * 用户当前是否在拖动滚动条 
-		 * @return 
-		 * 
-		 */
-		public function get isUserDraging():Boolean
-		{
-			return _isDraging;
+			
+			_mouseOutAlpha = UISet.scrollBarMouseOutAlpha;
+			alphaInSpeed = UISet.scrollBarAlphaInSpeed;
+			alphaOutSpeed = UISet.scrollBarAlphaOutSpeed;
 		}
 
 		public function get isAutoHide():Boolean
@@ -365,7 +360,7 @@ package cn.flashk.controls
 			updateSize(target.height);
 			targetWidth = target.width;
 			autoClip = _autoClip;
-			if (enableHandDrag == true) 
+			if (enableHandDrag == true || UIComponent.isMobile == true) 
 			{
 				_target.addEventListener(MouseEvent.MOUSE_DOWN, startHandDrag);
 				_target.addEventListener(MouseEvent.ROLL_OUT, setTagetMouseOut);
@@ -417,7 +412,11 @@ package cn.flashk.controls
 		
 		override public function setSize(newWidth:Number, newHeight:Number):void
 		{
-			super.setSize(newWidth,newHeight);
+			if(UISet.scrollBarResetWidth == true){
+				super.setSize(newWidth,newHeight);
+			}else{
+				super.setSize(_compoWidth,newHeight);
+			}
 			if(isTextField)
 			{
 				try
@@ -879,6 +878,7 @@ package cn.flashk.controls
 			this.removeEventListener(Event.ENTER_FRAME, scroll);
 			handY = getMousePos();
 			handRecY = getRectPos();
+			UI.stage.mouseChildren = false;
 			this.stage.addEventListener(MouseEvent.MOUSE_MOVE, handDrag);
 			this.stage.addEventListener(MouseEvent.MOUSE_UP, stopHandDrag);
 		}
@@ -887,6 +887,7 @@ package cn.flashk.controls
 		{
 			this.stage.removeEventListener(MouseEvent.MOUSE_MOVE, handDrag);
 			this.stage.removeEventListener(MouseEvent.MOUSE_UP, stopHandDrag);
+			UI.stage.mouseChildren = true;
 		}
 		
 		protected function handDrag(event:MouseEvent):void 

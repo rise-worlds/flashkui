@@ -30,6 +30,11 @@ package cn.flashk.controls.managers
 		public static var disableAlpha:Number = 0.8;
 		public static var isScrollBarHideArrow:Boolean = false;
 		public static var listIconSmooth:Boolean = false;
+		public static var scrollBarMouseOutAlpha:Number = 1;
+		public static var scrollBarAlphaInSpeed:Number = 0.08;
+		public static var scrollBarAlphaOutSpeed:Number = 0.03;
+		public static var scrollBarResetWidth:Boolean = true;
+		public static var mobileMouseError:int = 5;
 	
 	}
 }

@@ -1,5 +1,21 @@
 package cn.flashk.controls
 {
+	import flash.display.Bitmap;
+	import flash.display.BitmapData;
+	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
+	import flash.display.InteractiveObject;
+	import flash.display.Loader;
+	import flash.display.Shape;
+	import flash.display.SimpleButton;
+	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	import flash.filters.DropShadowFilter;
+	import flash.geom.Matrix;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
+	
 	import cn.flashk.controls.managers.DefaultStyle;
 	import cn.flashk.controls.managers.SkinLoader;
 	import cn.flashk.controls.managers.SkinManager;
@@ -13,20 +29,6 @@ package cn.flashk.controls
 	import cn.flashk.controls.support.BitmapDataText;
 	import cn.flashk.controls.support.UserMouse;
 	import cn.flashk.ui.UI;
-	
-	import flash.display.Bitmap;
-	import flash.display.BitmapData;
-	import flash.display.DisplayObject;
-	import flash.display.InteractiveObject;
-	import flash.display.Loader;
-	import flash.display.Shape;
-	import flash.display.SimpleButton;
-	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.events.MouseEvent;
-	import flash.filters.DropShadowFilter;
-	import flash.geom.Matrix;
-	import flash.geom.Rectangle;
 
 	/**
 	 * <p>Window 容器为其子项提供了标题栏、边框和内容区域。窗口默认允许用户拖动、更改大小和最大化/最小化。如果需要在窗口更改大小时实时排列窗口中的内容，请侦听resize事件。</p>
@@ -40,6 +42,10 @@ package cn.flashk.controls
 		
 		public static var dragMax:int = 50;
 		public static var dragMaxheight:int = 37;
+		public static var defaultDragCatchAddX:int = 32;
+		public static var defaultDragCatchAddY:int = 32;
+		public static var defaultDragCatchAddWidth:int = 0;
+		public static var defaultDragCatchAddHeight:int = 0;
 		
 		/**
 		 * 窗口拖动时拖动窗口的透明度值
@@ -104,11 +110,19 @@ package cn.flashk.controls
 		protected var _lastW:int;
 		protected var _lastH:int;
 		protected var _isResizeResetXY:Boolean = true;
+		protected var _dragCatchAddX:int;
+		protected var _dragCatchAddY:int;
+		protected var _dragCatchAddWidth:int;
+		protected var _dragCatchAddHeight:int;
 		
 		public function Window()
 		{
 			_compoWidth = 400;
 			_compoHeight = 300;
+			_dragCatchAddX = defaultDragCatchAddX;
+			_dragCatchAddY = defaultDragCatchAddY;
+			_dragCatchAddWidth = defaultDragCatchAddWidth;
+			_dragCatchAddHeight = defaultDragCatchAddHeight;
 			_bpSp.mouseChildren = false;
             draggingAlpha = StyleManager.globalWindowDragAlpha;
 			draggingTotalAlpha = StyleManager.globalWindowDragTotalAlpha;
@@ -141,7 +155,47 @@ package cn.flashk.controls
                 content = this.getChildByName("content_sp") ;
             }
 		}
-		
+
+		public function get dragCatchAddHeight():int
+		{
+			return _dragCatchAddHeight;
+		}
+
+		public function set dragCatchAddHeight(value:int):void
+		{
+			_dragCatchAddHeight = value;
+		}
+
+		public function get dragCatchAddWidth():int
+		{
+			return _dragCatchAddWidth;
+		}
+
+		public function set dragCatchAddWidth(value:int):void
+		{
+			_dragCatchAddWidth = value;
+		}
+
+		public function get dragCatchAddY():int
+		{
+			return _dragCatchAddY;
+		}
+
+		public function set dragCatchAddY(value:int):void
+		{
+			_dragCatchAddY = value;
+		}
+
+		public function get dragCatchAddX():int
+		{
+			return _dragCatchAddX;
+		}
+
+		public function set dragCatchAddX(value:int):void
+		{
+			_dragCatchAddX = value;
+		}
+
 		/**
 		 * 使用一个自定义Shape作为窗口的拖动区域
 		 * @param areaShape
@@ -838,15 +892,15 @@ package cn.flashk.controls
 			if(_ableUserDrag == false){
 				return;
 			}
-			if(backgroundFilter[0] is DropShadowFilter){
+			if(backgroundFilter && backgroundFilter[0] is DropShadowFilter){
 				addX = DropShadowFilter(backgroundFilter[0]).blurX;
 				addY = DropShadowFilter(backgroundFilter[0]).blurY;
 			}
-			addX = 32;
-			addY = 32;
+			addX = _dragCatchAddX;
+			addY = _dragCatchAddY;
 			if(_useDragCatch == true)
 			{
-				bd = new BitmapData(_compoWidth+addX*2,_compoHeight+addY*2,true,0);
+				bd = new BitmapData(_compoWidth+addX*2+_dragCatchAddWidth,_compoHeight+addY*2+_dragCatchAddHeight,true,0);
 				try
 				{
 					bd.draw(this,new Matrix(1,0,0,1,addX,addY));
@@ -967,29 +1021,44 @@ package cn.flashk.controls
 		protected function onStageResize(event:Event):void
 		{
 			if(_isResizeResetXY == false) return;
-			var midx:int = int(this.x+_compoWidth/2);
-			var midy:int = int(this.y + _compoHeight/2);
-			this.x = int(UI.stage.stageWidth/_lastW*midx-_compoWidth/2);
-			this.y = int(UI.stage.stageHeight/_lastH*midy-_compoHeight/2);
+			if(this.parent == null) return;
+			var gxy:Point = this.localToGlobal(new Point(0,0));
+			var midx:int = int(gxy.x+_compoWidth/2);
+			var midy:int = int(gxy.y + _compoHeight/2);
+			var nx:int = int(UI.stage.stageWidth/_lastW*midx-_compoWidth/2);
+			var ny:int = int(UI.stage.stageHeight/_lastH*midy-_compoHeight/2);
+			var nxy:Point = this.parent.globalToLocal(new Point(nx,ny));
+			this.x = nxy.x;
+			this.y = nxy.y;
 			checkOutside();
+		}
+		
+		override protected function checkOutView(event:Event):void
+		{
+			
 		}
 		
 		protected function checkOutside():void
 		{
+			if(this.parent == null) return;
 			_lastW = UI.stage.stageWidth;
 			_lastH = UI.stage.stageHeight;
-			if(this.x > UI.stage.stageWidth - dragMax) {
-				this.x = UI.stage.stageWidth - dragMax;
+			var gxy:Point = this.parent.localToGlobal(new Point(this.x,this.y));
+			if(gxy.x > UI.stage.stageWidth - dragMax) {
+				gxy.x = UI.stage.stageWidth - dragMax;
 			}
-			if(this.x < -_compoWidth + dragMax) {
-				this.x = -_compoWidth + dragMax;
+			if(gxy.x < -_compoWidth + dragMax) {
+				gxy.x = -_compoWidth + dragMax;
 			}
-			if(this.y > UI.stage.stageHeight - dragMaxheight) {
-				this.y = UI.stage.stageHeight - dragMaxheight;
+			if(gxy.y > UI.stage.stageHeight - dragMaxheight) {
+				gxy.y = UI.stage.stageHeight - dragMaxheight;
 			}
-			if(this.y < 0) {
-				this.y = 0;
+			if(gxy.y < 0) {
+				gxy.y = 0;
 			}
+			var nxy:Point = this.parent.globalToLocal(new Point(gxy.x,gxy.y));
+			this.x = nxy.x;
+			this.y = nxy.y; 
 		}
 		
 		protected function switchMax(event:MouseEvent):void

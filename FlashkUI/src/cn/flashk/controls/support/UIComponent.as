@@ -1,5 +1,12 @@
 package cn.flashk.controls.support 
 {
+	import flash.display.Sprite;
+	import flash.display.Stage;
+	import flash.events.Event;
+	import flash.events.KeyboardEvent;
+	import flash.filters.ColorMatrixFilter;
+	import flash.ui.Keyboard;
+	
 	import cn.flashk.controls.ToolTip;
 	import cn.flashk.controls.events.UIComponentEvent;
 	import cn.flashk.controls.managers.ComponentsManager;
@@ -8,13 +15,6 @@ package cn.flashk.controls.support
 	import cn.flashk.controls.managers.UISet;
 	import cn.flashk.controls.skin.sourceSkin.SourceSkin;
 	import cn.flashk.ui.UI;
-	
-	import flash.display.Sprite;
-	import flash.display.Stage;
-	import flash.events.Event;
-	import flash.events.KeyboardEvent;
-	import flash.filters.ColorMatrixFilter;
-	import flash.ui.Keyboard;
 	
 	/**
 	 * 当组件的大小改变时调度
@@ -87,6 +87,8 @@ package cn.flashk.controls.support
 	 */
 	public class UIComponent extends Sprite
 	{
+		public static var isMobile:Boolean = false;
+		
 		public static var stage:Stage;
 		public static var isCtrlKeyDown:Boolean = false;
 		public static var isAltKeyDown:Boolean = false;
@@ -106,6 +108,18 @@ package cn.flashk.controls.support
 		protected var _filtersBak:Array;
 		protected var _isSizeInit:Boolean=false;
 		protected var _mouseBaks:Array = [];
+		protected var _isEnableChangeStyle:Boolean = true;
+
+		public function get isEnableChangeStyle():Boolean
+		{
+			return _isEnableChangeStyle;
+		}
+
+		public function set isEnableChangeStyle(value:Boolean):void
+		{
+			_isEnableChangeStyle = value;
+		}
+
 		/**
 		 * 销毁此组件，建议需要清除组件的引用和内存时调用此方法，调用之后，将不能再执行组件方法。销毁过程中将按顺序进行以下操作：将自己从显示列表移除，清除组件使用的位图缓存，清除组件内部使用的其他内存。调用clearAllEventListener清除所有的监听
 		 */ 
@@ -147,19 +161,23 @@ package cn.flashk.controls.support
 		public function set enabled(value:Boolean):void {
 			_enabled = value;
 			if (_enabled == false) {
-				_filtersBak = this.filters;
-				_mouseBaks = [this.mouseChildren, this.mouseEnabled];
 				this.mouseChildren = false;
 				this.mouseEnabled = false;
-				this.filters = UI.disableFilter;
-				this.alpha = 0.5;
+				if(_isEnableChangeStyle == true){
+					_filtersBak = this.filters;
+					_mouseBaks = [this.mouseChildren, this.mouseEnabled];
+					this.filters = UI.disableFilter;
+					this.alpha = 0.5;
+				}
 			}else {
-				this.filters = _filtersBak;
 				if(_mouseBaks.length > 1){
 					this.mouseChildren = _mouseBaks[0];
 					this.mouseEnabled = _mouseBaks[1];
 				}
-				this.alpha = 1.0;
+				if(_isEnableChangeStyle == true){
+					this.filters = _filtersBak;
+					this.alpha = 1.0;
+				}
 			}
 		}
 		
