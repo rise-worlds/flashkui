@@ -56,6 +56,7 @@ package cn.flashk.controls.skin
 		}
 		
 		private function startShowOver(event:MouseEvent):void {
+			bakFilters = view.filters;
 			index = 0;
 			eventDis.removeEventListener(Event.ENTER_FRAME, outMotion);
 			eventDis.addEventListener(Event.ENTER_FRAME, overMotion);

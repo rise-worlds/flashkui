@@ -6,6 +6,7 @@ package cn.flashk.controls
 	import cn.flashk.controls.managers.SourceSkinLinkDefine;
 	import cn.flashk.controls.managers.StyleManager;
 	import cn.flashk.controls.managers.UISet;
+	import cn.flashk.controls.modeStyles.ScrollBarSkinSet;
 	import cn.flashk.controls.skin.ActionDrawSkin;
 	import cn.flashk.controls.skin.VScrollBarSkin;
 	import cn.flashk.controls.skin.sourceSkin.VScrollBarSourceSkin;
@@ -79,6 +80,11 @@ package cn.flashk.controls
 		public var snapNum:Number = 1;
 		public var whenDragUnableTargetMouseEvent:Boolean = true;
 		public var mousemouseWheelDelta:uint = 7;
+		public var userDragSomothSpeed:Number = 1.5;
+		/**
+		 * 默认的连续按下上下箭头的滚动速度 
+		 */
+		public var defaultArrowFrameMoveSpeed:Number = 4;
 		/**
 		 * 滑进时的透明度变化速度 
 		 */
@@ -118,18 +124,22 @@ package cn.flashk.controls
 		protected var _checkTimer:Timer;
 		protected var _isUseRefUpdate:Boolean=false;
 		protected var _mouseWellTarget:InteractiveObject;
-		protected var _arrowFrameMoveSpeed:Number = 4;
+		protected var _arrowFrameMoveSpeed:Number;
 		protected var _isFrameMove:Boolean = false;
 		protected var _isDraging:Boolean = false;
 		protected var _isMouseDrag:Boolean = false;
+		protected var _skinSet:ScrollBarSkinSet;
+		protected var _isAutoHide:Boolean=true;
 		
-		public function VScrollBar() 
+		public function VScrollBar(skinSet:ScrollBarSkinSet=null) 
 		{
+			_skinSet = skinSet;
 			super();
-            
+			
 			_compoWidth = defaultWidth;
 			_compoHeight = 100;
 			_smoothNum = StyleManager.globalScrollBarSmoothNum;
+			_arrowFrameMoveSpeed = defaultArrowFrameMoveSpeed;
 			timer = new Timer(250);
 			timer.addEventListener(TimerEvent.TIMER, scrollUpOrDown);
 			initMouseEvents();
@@ -140,6 +150,26 @@ package cn.flashk.controls
 			this.addEventListener(Event.ADDED_TO_STAGE,checkText);
 			this.addEventListener(MouseEvent.MOUSE_WHEEL,mouseWellScroll);
 			hideArrow = UISet.isScrollBarHideArrow;
+		}
+
+		/**
+		 * 用户当前是否在拖动滚动条 
+		 * @return 
+		 * 
+		 */
+		public function get isUserDraging():Boolean
+		{
+			return _isDraging;
+		}
+
+		public function get isAutoHide():Boolean
+		{
+			return _isAutoHide;
+		}
+
+		public function set isAutoHide(value:Boolean):void
+		{
+			_isAutoHide = value;
 		}
 
 		public function get arrowFrameMoveSpeed():Number
@@ -405,14 +435,19 @@ package cn.flashk.controls
 		
 		private function checkViewScroll(event:Event=null):void
 		{
+			if(_isAutoHide == false) return;
 			if(isTextField==false) 
 			{
 				if(targetHeight <= clipHeight)
 				{
-					this.visible = false;
+					if(_isAutoHide == true){
+						this.visible = false;
+					}
+					mouseChildren=false;
 				}else
 				{
 					this.visible = true;
+					mouseChildren = true;
 				}
 				return;
 			}
@@ -422,14 +457,16 @@ package cn.flashk.controls
 				mouseChildren=true;
 			}else
 			{
-				alpha = 0.5;
+				if(_isAutoHide == true){
+					alpha = 0.5;
+				}
 				mouseChildren=false;
 			}
 		}
 		
 		public function updateSize(newSize:Number=0,isLess:Boolean=false):void
 		{
-			newSize += 2;
+//			newSize += 2;
 			if(isTextField && newSize==0)
 			{
 				if(lastMaxScrollV == TextField(_target).maxScrollV && _isUseRefUpdate==false) return;
@@ -446,6 +483,14 @@ package cn.flashk.controls
 			}
 			skin.reDraw();
 			checkViewScroll();
+			checkOutRange();
+		}
+		
+		private function checkOutRange():void
+		{
+			if(_target && _target.scrollRect && _target.scrollRect.y > maxPos){
+				scrollToPosition(maxScrollPosition);
+			}
 		}
 		
 		public function clearTargetListener():void 
@@ -454,6 +499,13 @@ package cn.flashk.controls
 			_target.removeEventListener(MouseEvent.ROLL_OVER, setMyAlphaIn);
 			_target.removeEventListener(MouseEvent.ROLL_OUT, setMyAlphaOut);
 			_target.addEventListener(MouseEvent.MOUSE_WHEEL,mouseWellScroll);
+		}
+		
+		public function scrollToPositionPercent(value:Number):void
+		{
+			if(value>1) value = 1;
+			if(value<0) value = 0;
+			scrollToPosition(value*maxScrollPosition);
 		}
 		
 		/**
@@ -470,6 +522,9 @@ package cn.flashk.controls
 			{
 				toY = maxPos;
 			}
+			if(toY < 0){
+				toY = 0;
+			}
 			setRectPos(toY);
 			updateScrollerY();
 		}
@@ -481,7 +536,11 @@ package cn.flashk.controls
 		
 		override public function setSourceSkin():void 
 		{
-			setSkin(SkinLoader.getClassFromSkinFile(SourceSkinLinkDefine.SCROLL_BAR));
+			if(_skinSet){
+				setSkin(SkinLoader.getClassFromSkinFile(_skinSet.bar));
+			}else{
+				setSkin(SkinLoader.getClassFromSkinFile(SourceSkinLinkDefine.SCROLL_BAR));
+			}
 		}
 		
 		override public function setSkin(Skin:Class):void 
@@ -492,7 +551,7 @@ package cn.flashk.controls
 				ActionDrawSkin(skin).init(this,styleSet);
 			}else
 			{
-				var sous:VScrollBarSourceSkin = new VScrollBarSourceSkin();
+				var sous:VScrollBarSourceSkin = new VScrollBarSourceSkin(_skinSet);
 				sous.init(this,styleSet,Skin);
 				skin = sous;
 			}
@@ -605,6 +664,7 @@ package cn.flashk.controls
 			{
 				
 			}
+			updateToPos(null,true);
 			this.dispatchEvent(new UIComponentEvent(UIComponentEvent.SCROLL_BAR_STOP_DRAG));
 		}
 		
@@ -618,8 +678,10 @@ package cn.flashk.controls
 			}
 		}
 		
-		protected function scroll(event:Event):void 
+		protected function scroll(event:Event=null):void 
 		{
+			var spval:Number = _smoothNum;
+			if(_isDraging) spval = userDragSomothSpeed;
 			if(_target && isTextField)
 			{
 				TextField(_target).scrollV = TextField(_target).maxScrollV*toY /maxPos;
@@ -627,31 +689,24 @@ package cn.flashk.controls
 			}
 			if(_target != null)
 			{
-				var newY:Number = (toY - getRectPos()) / _smoothNum;
-				var absNum:Number = Math.abs(toY - getRectPos());
-				if (Math.abs(newY) < 1) 
-				{
-					if (toY > getRectPos()) 
-					{
-						newY = 1;
-					}else 
-					{
-						newY = -1;
-					}
-				}
-				if (absNum <= 1 && isDrag == false) 
+				var newY:Number = (toY - getRectPos()) / spval;
+				var isOnePix:Boolean = newY < 1 && newY > -1;
+				if (isOnePix && isDrag == false) 
 				{
 					this.removeEventListener(Event.ENTER_FRAME, scroll);
 					setRectPos(toY);
 					return;
 				}
-				if(absNum > 1)
+				if(isOnePix == false)
 				{
 					setRectPos( getRectPos() + newY);
 					if (unableUpdate == false) 
 					{
 						updateScrollerY();
 					}
+				}else
+				{
+					setRectPos(toY);
 				}
 			}else
 			{
@@ -660,18 +715,25 @@ package cn.flashk.controls
 			}
 		}
 		
-		protected function updateToPos(event:MouseEvent):void 
+		protected function updateToPos(event:MouseEvent=null,isUpdateNow:Boolean=false):void 
 		{
 			updateMaxPos();
 			var lessNum:Number = _hideArrow ? 0 : _compoWidth;
 			toY =  maxPos * (scrollerRef.y - lessNum) / max ;
-			if(_smoothScroll == false)
+			if(_smoothScroll == false || isUpdateNow)
 			{
 				setRectPos( toY);
 			}
 			if(_isDraging == false)
 			{
 				this.dispatchEvent(new Event("scroll"));
+			}
+			scroll();
+			if(SkinManager.isUseDefaultSkin == false){
+				skin.checkYChange();
+			}
+			if(event){
+				event.updateAfterEvent();
 			}
 		}
 		
@@ -693,7 +755,11 @@ package cn.flashk.controls
 				scrollerRef.y = lessNum + max * getRectPos() / maxPos;
 			}
 			if(scrollerRef.y>max+lessNum) scrollerRef.y = max+lessNum;
+			if(scrollerRef.y<lessNum) scrollerRef.y = lessNum;
 			scrollerRef.y = int(scrollerRef.y);
+			if(SkinManager.isUseDefaultSkin == false){
+				skin.checkYChange();
+			}
 		}
 		
 		public function updateScrollBarPostion():void

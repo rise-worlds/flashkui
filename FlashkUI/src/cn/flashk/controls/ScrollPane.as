@@ -1,5 +1,18 @@
 package cn.flashk.controls
 {
+	import cn.flashk.controls.managers.SkinLoader;
+	import cn.flashk.controls.managers.SkinManager;
+	import cn.flashk.controls.managers.SkinThemeColor;
+	import cn.flashk.controls.managers.SourceSkinLinkDefine;
+	import cn.flashk.controls.managers.StyleManager;
+	import cn.flashk.controls.modeStyles.ScrollBarSkinSet;
+	import cn.flashk.controls.skin.ActionDrawSkin;
+	import cn.flashk.controls.skin.ListSkin;
+	import cn.flashk.controls.skin.sourceSkin.ListSourceSkin;
+	import cn.flashk.controls.skin.sourceSkin.SourceSkin;
+	import cn.flashk.controls.support.ColorConversion;
+	import cn.flashk.controls.support.UIComponent;
+	
 	import flash.display.Bitmap;
 	import flash.display.DisplayObject;
 	import flash.display.Loader;
@@ -8,18 +21,6 @@ package cn.flashk.controls
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
 	import flash.utils.ByteArray;
-	
-	import cn.flashk.controls.managers.SkinLoader;
-	import cn.flashk.controls.managers.SkinManager;
-	import cn.flashk.controls.managers.SkinThemeColor;
-	import cn.flashk.controls.managers.SourceSkinLinkDefine;
-	import cn.flashk.controls.managers.StyleManager;
-	import cn.flashk.controls.skin.ActionDrawSkin;
-	import cn.flashk.controls.skin.ListSkin;
-	import cn.flashk.controls.skin.sourceSkin.ListSourceSkin;
-	import cn.flashk.controls.skin.sourceSkin.SourceSkin;
-	import cn.flashk.controls.support.ColorConversion;
-	import cn.flashk.controls.support.UIComponent;
 
 	/**
 	 * ScrollPane 组件在一个可滚动区域中呈现显示对象和 JPEG、GIF 与 PNG 文件，以及 SWF 文件。 可以使用滚动窗格来限制这些媒体类型所占用的屏幕区域。
@@ -37,7 +38,7 @@ package cn.flashk.controls
 		protected var _isNeedClip:Boolean = true;
 		protected var _imageSmooth:Boolean
 		
-		public function ScrollPane()
+		public function ScrollPane(skinSet:ScrollBarSkinSet=null)
 		{
 			super();
 			
@@ -55,7 +56,7 @@ package cn.flashk.controls
 			_box = new Sprite();
 			_box.x = _box.y =1;
 			this.addChild(_box);
-			_vscrollBar = new VScrollBar();
+			_vscrollBar = new VScrollBar(skinSet);
 			_vscrollBar.smoothNum = StyleManager.listScrollBarSmoothNum;
 			_vscrollBar.updateSize(100);
 			_vscrollBar.smoothScroll = true;

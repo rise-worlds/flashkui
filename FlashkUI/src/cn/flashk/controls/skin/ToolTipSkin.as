@@ -1,13 +1,19 @@
 package cn.flashk.controls.skin
 {
-	import flash.display.DisplayObject;
-	import flash.display.Shape;
-	
 	import cn.flashk.controls.ToolTip;
 	import cn.flashk.controls.managers.DefaultStyle;
+	import cn.flashk.controls.managers.SkinThemeColor;
 	import cn.flashk.controls.support.RoundRectAdvancedDraw;
 	import cn.flashk.controls.support.UIComponent;
-	import cn.flashk.controls.managers.SkinThemeColor;
+	
+	import flash.display.CapsStyle;
+	import flash.display.DisplayObject;
+	import flash.display.GradientType;
+	import flash.display.Graphics;
+	import flash.display.JointStyle;
+	import flash.display.LineScaleMode;
+	import flash.display.Shape;
+	import flash.geom.Matrix;
 	
 	public class ToolTipSkin extends ActionDrawSkin
 	{
@@ -30,11 +36,27 @@ package cn.flashk.controls.skin
 			return shape;
 		}
 		
+		public  function initFillStyle(fillGraphics:Graphics,width:Number,height:Number,angle:Number=-1):void
+		{
+			fillGraphics.lineStyle(1, styleSet["borderColor"] ,styleSet["borderAlpha"],DefaultStyle.pixelHinting,LineScaleMode.NORMAL,CapsStyle.ROUND,JointStyle.ROUND,3);
+			var fillColors:Array = [styleSet["backgroundTopColor"],styleSet["backgroundBottomColor"] ];
+			var fillAlphas:Array = [styleSet["backgroundTopAlpha"],styleSet["backgroundBottomAlpha"]];
+			var fillRatios:Array = [0, 255];
+				var mat:Matrix;
+				mat = new Matrix();
+				if(angle == -1)
+				{
+					angle = 90;
+				}
+				mat.createGradientBox(width, height, angle* Math.PI/180);
+				fillGraphics.beginGradientFill(GradientType.LINEAR, fillColors, fillAlphas, fillRatios, mat);
+		}
+		
 		override public function reDraw():void {
 			shape.graphics.clear();
 			var width:Number = tar.compoWidth - 0;
 			var height:Number = tar.compoHeight -0;
-			SkinThemeColor.initFillStyle(shape.graphics,width,height);
+			initFillStyle(shape.graphics,width,height);
 			var ew:Number = styleSet["ellipse"];
 			var eh:Number = styleSet["ellipse"];
 			var bw:Number = styleSet["ellipse"];

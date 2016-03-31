@@ -52,7 +52,11 @@ package cn.flashk.controls.skin.sourceSkin
 			}
 			try
 			{
-				TextField(_ui.getChildByName("per_txt")).text = Number(progressBar.value/progressBar.maximum*100).toFixed(progressBar.toFixNum)+"%";
+				if(progressBar.value/progressBar.maximum == 0){
+					TextField(_ui.getChildByName("per_txt")).text = "";
+				}else{
+					TextField(_ui.getChildByName("per_txt")).text = Number(progressBar.value/progressBar.maximum*100).toFixed(progressBar.toFixNum)+"%";
+				}
 			} 
 			catch(error:Error) 
 			{

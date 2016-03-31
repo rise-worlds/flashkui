@@ -1,6 +1,7 @@
 package cn.flashk.controls
 {
 	import cn.flashk.controls.interfaces.IListItemRender;
+	import cn.flashk.controls.modeStyles.ScrollBarSkinSet;
 	import cn.flashk.controls.support.DataGridColumnSet;
 	import cn.flashk.controls.support.DataGridItemRender;
 	import cn.flashk.controls.support.DataGridTitle;
@@ -55,10 +56,10 @@ package cn.flashk.controls
 		protected var _renders:Array = [TextFieldItemRender,TextFieldItemRender,TextFieldItemRender,TextFieldItemRender,TextFieldItemRender];
 		protected var _isSetWidth:Boolean = false;
 		
-		public function DataGrid()
+		public function DataGrid(skinSet:ScrollBarSkinSet=null)
 		{
 			this.mouseEnabled = false;
-			super();
+			super(skinSet);
 			_compoWidth = 600;
 			_itemRender = DataGridItemRender;
 			styleSet["padding"] = 10;

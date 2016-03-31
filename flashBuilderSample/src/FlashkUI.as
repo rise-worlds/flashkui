@@ -1,11 +1,5 @@
-package
+package 
 {
-	import flash.display.BitmapData;
-	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.events.MouseEvent;
-	import flash.utils.getTimer;
-	
 	import cn.flashk.controls.Alert;
 	import cn.flashk.controls.Button;
 	import cn.flashk.controls.CheckBox;
@@ -19,18 +13,33 @@ package
 	import cn.flashk.controls.TabBar;
 	import cn.flashk.controls.TextInput;
 	import cn.flashk.controls.TileList;
+	import cn.flashk.controls.ToolTip;
 	import cn.flashk.controls.Tree;
 	import cn.flashk.controls.data.ListItem;
 	import cn.flashk.controls.events.ListEvent;
+	import cn.flashk.controls.managers.DefaultStyle;
+	import cn.flashk.controls.managers.SkinLoader;
 	import cn.flashk.controls.managers.SkinManager;
 	import cn.flashk.controls.managers.SkinThemeColor;
 	import cn.flashk.controls.modeStyles.ButtonStyle;
+	import cn.flashk.controls.modeStyles.ScrollBarSkinSet;
 	import cn.flashk.controls.proxy.CustomListItem;
+	import cn.flashk.controls.skin.sourceSkin.SliderSourceSkin;
 	import cn.flashk.ui.UI;
+	
+	import flash.display.BitmapData;
+	import flash.display.Sprite;
+	import flash.display.StageAlign;
+	import flash.display.StageScaleMode;
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	import flash.utils.getTimer;
 	
 	[SWF(frameRate = "30" , width = "1000" , height = "500" , backgroundColor = "0xffffff")]
 	public class FlashkUI extends Sprite
 	{
+		public var isUseBitmapSkin:Boolean = false;
+		
 		private var _tileList:TileList;
 		private var _list:List;
 		private var _treeData:XML;
@@ -63,6 +72,291 @@ package
 		private var _pro6:ProgressBar;
 		private var _fpsCombo:ComboBox;
 		private var _pcount:int = 0;
+		private var _testCombo:ComboBox;
+		
+		public function FlashkUI()
+		{
+			_tab1SP = new Sprite();
+			_tab2SP = new Sprite();
+			_tab3SP = new Sprite();
+			_tab4SP = new Sprite();
+			
+			this.stage.align = StageAlign.TOP_LEFT;
+			this.stage.scaleMode = StageScaleMode.NO_SCALE;
+			UI.init(this.stage,32);
+			if(isUseBitmapSkin == true){
+				ToolTip.setDefaultToolTipStyle(0,0xFFFFFF,0xDDDDDD,1,1,0x666666,0.5);
+				SkinLoader.loadSkinFile("skin.swf",initUI,null,null);
+			}else{
+				initUI();
+			}
+			//			UISet.isScrollBarHideArrow = true;
+			//			UI.autoBuild();
+		}
+		private function initUI():void
+		{
+			var t:int;
+			
+			_bd = new BitmapData(14,14,true,0x00FFFFFF);
+			_bd.setPixel32(5,5,0xFF000000);
+			_bd.setPixel32(7,7,0xFF000000);
+			_bd.setPixel32(5,7,0xFF000000);
+			_bd.setPixel32(5,9,0xFF000000);
+			_bd.setPixel32(12,5,0xFFFF6600);
+			_bd.setPixel32(12,7,0xFF00FF00);
+			_bd.setPixel32(10,7,0xFF0000FF);
+			_bd.setPixel32(12,9,0xFF000000);
+			
+			this.x = this.y = 5;
+			
+			_tabs =new TabBar();
+			_tabs.setSize(845,450);
+			_tabs.x = 130;
+			this.addChild(_tabs);
+			_tabs.addTab("按钮",_tab1SP,null,false,"SkinButton3",MyButtonSkin);
+			_tabs.addTab("DIY风格",_tab2SP);
+			_tabs.addTab("进度条",_tab3SP);
+			_tabs.addTab("树",_tab4SP,null,false,"SkinButton3",MyButtonSkin);
+			_tab1SP.x = _tab1SP.y=15;
+			_tab2SP.x = _tab2SP.y=15;
+			_tab3SP.x = _tab3SP.y=15;
+			
+			_bu = new Button();
+			_bu.x = 550;
+			_bu.y = 23;
+			_bu.label = "确定";
+			_bu.enabled = false;
+			_tab1SP.addChild(_bu);
+			
+			_bu = new Button("SkinButton2",MyButtonSkin);
+			_bu.x = 450;
+			_bu.y = 23;
+			_bu.label = "Skin";
+			_tab1SP.addChild(_bu);
+			
+			_bu = new Button("SkinButton3",MyButtonSkin);
+			_bu.x = 450;
+			_bu.y = 50;
+			_bu.label = "Skin2";
+			_bu.setSize(_bu.compoWidth,24);
+			_tab1SP.addChild(_bu);
+			
+			_bu = new Button();
+			_bu.x = 550;
+			_bu.y = 53;
+			_bu.label = "Alert测试";
+			_bu.setStyle(ButtonStyle.DEFAULT_SKIN_ELLIPSE_WIDTH, 7);
+			_bu.setStyle(ButtonStyle.DEFAULT_SKIN_ELLIPSE_HEIGHT, 7);
+			_tab1SP.addChild(_bu);
+			_bu.addEventListener(MouseEvent.CLICK,onAlertClick);
+			
+			_bu = new Button();
+			_bu.x = 550;
+			_bu.y = 83;
+			_bu.label = "Icon";
+			_bu.icon = _bd;
+			_tab1SP.addChild(_bu);
+			_bu.setStyle(ButtonStyle.DEFAULT_SKIN_ELLIPSE_WIDTH, 3.5);
+			_bu.setStyle(ButtonStyle.DEFAULT_SKIN_ELLIPSE_HEIGHT, 3.5);
+			
+			var radion:RadioButton;
+			radion = new RadioButton();
+			radion.label = "选项1";
+			radion.setXY(230,60);
+			_tab1SP.addChild(radion);
+			radion = new RadioButton();
+			radion.label = "选项2";
+			radion.setXY(230,85);
+			_tab1SP.addChild(radion);
+			
+			radion = new RadioButton("SkinRadioButton2");
+			radion.label = "选项1";
+			radion.groupName = "raGroup2";
+			radion.setXY(330,60);
+			_tab1SP.addChild(radion);
+			radion = new RadioButton("SkinRadioButton2");
+			radion.groupName = "raGroup2";
+			radion.label = "选项2";
+			radion.setXY(330,85);
+			_tab1SP.addChild(radion);
+			
+			var checkBox:CheckBox;
+			checkBox = new CheckBox();
+			checkBox.label = "勾选1";
+			checkBox.setXY(230,120);
+			_tab1SP.addChild(checkBox);
+			checkBox = new CheckBox("SkinCheckBox2",MyCheckBoxSkin);
+			checkBox.label = "勾选2";
+			checkBox.setXY(230,145);
+			_tab1SP.addChild(checkBox);
+			
+			var slider:Slider = new Slider();
+			slider.y = 40;
+			slider.snapInterval = 1;
+			slider.minSpaceNum = 5;
+			slider.thumbCount = 2;
+			_tab1SP.addChild(slider);
+			slider = new Slider();
+			slider.y = 5;
+			slider.snapInterval = 10;
+			slider.minSpaceNum = 10;
+			slider.showDragSpace = false;
+			slider.showTick(10);
+			_tab1SP.addChild(slider);
+			
+			SliderSourceSkin.setNextSliderBgSkin("SkinMacSliderBackground");
+			slider = new Slider("SkinSlider2",MySliderSkin);
+			slider.y = 5;
+			slider.x = 220;
+			slider.snapInterval = 10;
+			slider.minSpaceNum = 10;
+			slider.showTick(10);
+			slider.showDragSpace = false;
+			_tab1SP.addChild(slider);
+			
+			slider = new Slider();
+			slider.y = 95;
+			slider.snapInterval = 1;
+			slider.minSpaceNum = 5;
+			slider.showDragSpace = true;
+			_tab1SP.addChild(slider);
+			
+			var scrollSkinSet:ScrollBarSkinSet = new ScrollBarSkinSet();
+			scrollSkinSet.bar = "SkinMacScrollBar";
+			scrollSkinSet.background = "SkinMacScrollBarBackground";
+			scrollSkinSet.backgroundMask = "SkinMacScrollBarBackgroundMask";
+			scrollSkinSet.topArrow = "SkinMacScrollBarArrTop";
+			scrollSkinSet.bottomArrow = "SkinMacScrollBarArrBottom";
+			scrollSkinSet.middle = "SkinMacScrollBarMiddle";
+			
+			var combo:ComboBox = new ComboBox(scrollSkinSet);
+			var item:CustomListItem;
+			for(var i:int=1;i<10;i++)
+			{
+				item = new CustomListItem();
+				item.label = "数据"+i;;
+				combo.addItem(item);
+			}
+			combo.y = 60;
+			_tab1SP.addChild(combo);
+			_testCombo = combo;
+			
+			_tileList = new TileList(scrollSkinSet);
+			_tileList.setSize(600,228);
+			for(i=1;i<31;i++)
+			{
+				item = new CustomListItem()
+				item.label ="文件"+i;
+				item.source = _bd;
+				_tileList.addItem(item)
+			}
+			_list= new List();
+			_list.snapNum = 1;
+			_list.x = 620;
+			_list.setSize(150,228);
+			_list.snapNum = 2;
+			for(i=1;i<21;i++)
+			{
+				item= new CustomListItem()
+				item.label ="内容"+i;
+				item.icon = _bd;
+				_list.addItem(item)
+			}
+			_tileList.y = _list.y = 180;
+			_tab1SP.addChild(_tileList);
+			_tab1SP.addChild(_list);
+			
+			var nums:NumericStepper = new NumericStepper();
+			//			nums.divisor = 10;
+			//			nums.maximum =500;
+			nums.minimum = -100;
+			nums.y = 110;
+			_tab1SP.addChild(nums);
+			
+			var deleteNum2:NumericStepper = new NumericStepper();
+			deleteNum2.value = -95;
+			deleteNum2.minimum = -100;
+			deleteNum2.setXY(0,450);
+			this.addChild(deleteNum2);
+			
+			nums= new NumericStepper();
+			nums.y = 140;
+			nums.value = 15;
+			nums.enabled = false;
+			_tab1SP.addChild(nums);
+			
+			UI.creatButton("List500",_tab1SP,listTest,650,150);
+			
+			initSetSkin();
+			
+			_tree = new Tree(scrollSkinSet);
+			_tree.itemDoubleClickEnabled = true;
+			_tree.addEventListener(ListEvent.ITEM_DOUBLE_CLICK,onDoubleClick);
+			_tree.addEventListener(ListEvent.ITEM_CLICK,onItemClick);
+			//			_tree.itemRender = MyTreeRender;
+			//			_tree.itemRender = BaseTreeItemRender;
+			_tree.isParentAutoClickOpen = true;
+			_tree.setSize(300,400);
+			_xml = 
+				<data>
+				<item label="房间" id="1">
+					<item label="女" id="1">
+						<item label="aaa1"  id="51"/>
+						<item label="aaa2"  id="51"/>
+						<item label="aaa3"  id="51"/>
+						<item label="aaa4"  id="51"/>
+					</item>
+					<item label="男" id="1">
+						<item label="bbb1"  id="51"/>
+						<item label="bbb2"  id="51"/>
+						<item label="bbb3"  id="51"/>
+						<item label="bbb4"  id="51"/>
+						<item label="bbb5"  id="51"/>
+						<item label="bbb6"  id="51"/>
+					</item>
+				</item>
+				<item label="我的好友" id="1">
+					<item label="玩家a"  id="51"/>
+				</item>
+				<item label="陌生人" id="1">
+					<item label="玩家b"  id="51"/>
+				</item>
+				<item label="黑名单" id="1">
+					<item label="玩家c"  id="51"/>
+				</item>
+				</data>
+			
+			_tab4SP.addChild(_tree);
+			_tree.dataProvider = _xml;
+			var btn:Button;
+			btn = new Button();
+			btn.label = "成批插入";
+			btn.x = 350;
+			btn.addEventListener(MouseEvent.CLICK,onBtnClickF);
+			_tab4SP.addChild(btn);
+			
+			UI.creatButton("全部展开",_tab4SP,openAll,350,30);
+			UI.creatButton("全部收起",_tab4SP,closeAll,350,60);
+			UI.creatButton("碎片插入",_tab4SP,onBtnClick3,350,90);
+			UI.creatButton("删除单个",_tab4SP,onBtnClickDel,350,120);
+			
+			_label2 = new Label();
+			_label2.x = 400;
+			_label2.y = 400;
+			_tab4SP.addChild(_label2);
+			
+			_combo = new ComboBox();
+			_combo.addItem({label:1,value:1});
+			_combo.addItem({label:10,value:10});
+			_combo.addItem({label:50,value:50});
+			_combo.addItem({label:100,value:100});
+			_combo.addItem({label:300,value:300});
+			_combo.addItem({label:500,value:500});
+			_combo.addItem({label:1000,value:1000});
+			_tab4SP.addChild(_combo);
+			_combo.x = 500;
+			_combo.selectedIndex = 2;
+		}
 		
 		private function initSetSkin():void
 		{
@@ -218,7 +512,6 @@ package
 				arr[i] = uint("0x"+String(arr[i]).slice(1));
 			}
 			return arr;
-			
 		}
 		
 		private function getNumberArr(str:String):Array
@@ -262,230 +555,9 @@ package
 			}
 		}
 		
-		public function FlashkUI()
+		protected function onAlertClick(event:MouseEvent):void
 		{
-			var t:int;
-			_tab1SP = new Sprite();
-			_tab2SP = new Sprite();
-			_tab3SP = new Sprite();
-			_tab4SP = new Sprite();
-			UI.init(this.stage);
-//			UISet.isScrollBarHideArrow = true;
-//			UI.autoBuild();
-		
-			_bd = new BitmapData(14,14,true,0x00FFFFFF);
-			_bd.setPixel32(5,5,0xFF000000);
-			_bd.setPixel32(7,7,0xFF000000);
-			_bd.setPixel32(5,7,0xFF000000);
-			_bd.setPixel32(5,9,0xFF000000);
-			_bd.setPixel32(12,5,0xFFFF6600);
-			_bd.setPixel32(12,7,0xFF00FF00);
-			_bd.setPixel32(10,7,0xFF0000FF);
-			_bd.setPixel32(12,9,0xFF000000);
-			
-			this.x = this.y = 5;
-			SkinThemeColor.userDefaultColor(32);
-			
-			_tabs =new TabBar();
-			_tabs.setSize(845,450);
-			_tabs.x = 130;
-			this.addChild(_tabs);
-			_tabs.addTab("按钮",_tab1SP);
-			_tabs.addTab("DIY风格",_tab2SP);
-			_tabs.addTab("进度条",_tab3SP);
-			_tabs.addTab("树",_tab4SP);
-			_tab1SP.x = _tab1SP.y=15;
-			_tab2SP.x = _tab2SP.y=15;
-			_tab3SP.x = _tab3SP.y=15;
-			
-			_bu = new Button();
-			_bu.x = 550;
-			_bu.y = 23;
-			_bu.label = "确定";
-			_bu.enabled = false;
-			_tab1SP.addChild(_bu);
-			
-			_bu = new Button();
-			_bu.x = 550;
-			_bu.y = 53;
-			_bu.label = "确定";
-			_bu.setStyle(ButtonStyle.DEFAULT_SKIN_ELLIPSE_WIDTH, 7);
-			_bu.setStyle(ButtonStyle.DEFAULT_SKIN_ELLIPSE_HEIGHT, 7);
-			_tab1SP.addChild(_bu);
-			
-			_bu = new Button();
-			_bu.x = 550;
-			_bu.y = 83;
-			_bu.icon = _bd;
-			_tab1SP.addChild(_bu);
-			_bu.setStyle(ButtonStyle.DEFAULT_SKIN_ELLIPSE_WIDTH, 3.5);
-			_bu.setStyle(ButtonStyle.DEFAULT_SKIN_ELLIPSE_HEIGHT, 3.5);
-			
-			var radion:RadioButton;
-			radion = new RadioButton();
-			radion.label = "选项1";
-			radion.setXY(230,60);
-			_tab1SP.addChild(radion);
-			radion = new RadioButton();
-			radion.label = "选项2";
-			radion.setXY(230,85);
-			_tab1SP.addChild(radion);
-			
-			var checkBox:CheckBox;
-			checkBox = new CheckBox();
-			checkBox.label = "勾选1";
-			checkBox.setXY(230,120);
-			_tab1SP.addChild(checkBox);
-			checkBox = new CheckBox();
-			checkBox.label = "勾选2";
-			checkBox.setXY(230,145);
-			_tab1SP.addChild(checkBox);
-			
-			var slider:Slider = new Slider();
-			slider.y = 40;
-			slider.snapInterval = 1;
-			slider.minSpaceNum = 5;
-			slider.thumbCount = 2;
-			_tab1SP.addChild(slider);
-			slider = new Slider();
-			slider.y = 5;
-			slider.snapInterval = 10;
-			slider.minSpaceNum = 10;
-			_tab1SP.addChild(slider);
-			slider = new Slider();
-			slider.y = 95;
-			slider.snapInterval = 1;
-			slider.minSpaceNum = 5;
-			_tab1SP.addChild(slider);
-			
-			var combo:ComboBox = new ComboBox();
-			var item:CustomListItem;
-			for(var i:int=1;i<10;i++)
-			{
-				item = new CustomListItem();
-				item.label = "数据"+i;;
-				combo.addItem(item);
-			}
-			combo.y = 60;
-			_tab1SP.addChild(combo);
-			
-			_tileList = new TileList();
-			_tileList.setSize(600,228);
-			for(i=1;i<51;i++)
-			{
-				item = new CustomListItem()
-				item.label ="文件"+i;
-				item.source = _bd;
-				_tileList.addItem(item)
-			}
-			_list= new List();
-			_list.snapNum = 2;
-			_list.x = 620;
-			_list.setSize(150,228);
-			t = getTimer();
-			for(i=1;i<101;i++)
-			{
-				item= new CustomListItem()
-				item.label ="内容"+i;
-				item.icon = _bd;
-				_list.addItem(item)
-			}
-			trace(getTimer()-t);
-			_tileList.y = _list.y = 180;
-			_tab1SP.addChild(_tileList);
-			_tab1SP.addChild(_list);
-		
-			var nums:NumericStepper = new NumericStepper();
-//			nums.divisor = 10;
-//			nums.maximum =500;
-			nums.minimum = -100;
-			nums.y = 110;
-			_tab1SP.addChild(nums);
-			
-			var deleteNum2:NumericStepper = new NumericStepper();
-			deleteNum2.value = -95;
-			deleteNum2.minimum = -100;
-			deleteNum2.setXY(0,450);
-			this.addChild(deleteNum2);
-			
-			
-			nums= new NumericStepper();
-			nums.y = 140;
-			nums.value = 15;
-			nums.enabled = false;
-			_tab1SP.addChild(nums);
-		
-			UI.creatButton("List1000",_tab1SP,listTest,650,150);
-			
-			initSetSkin();
-
-			_tree = new Tree();
-			_tree.itemDoubleClickEnabled = true;
-			_tree.addEventListener(ListEvent.ITEM_DOUBLE_CLICK,onDoubleClick);
-			_tree.addEventListener(ListEvent.ITEM_CLICK,onItemClick);
-			_tree.itemRender = MyTreeRender;
-			//			_tree.itemRender = BaseTreeItemRender;
-			_tree.isParentAutoClickOpen = true;
-			_tree.setSize(300,400);
-			_xml = 
-				<data>
-				<item label="房间" id="1">
-					<item label="女" id="1">
-						<item label="aaa1"  id="51"/>
-						<item label="aaa2"  id="51"/>
-						<item label="aaa3"  id="51"/>
-						<item label="aaa4"  id="51"/>
-					</item>
-					<item label="男" id="1">
-						<item label="bbb1"  id="51"/>
-						<item label="bbb2"  id="51"/>
-						<item label="bbb3"  id="51"/>
-						<item label="bbb4"  id="51"/>
-						<item label="bbb5"  id="51"/>
-						<item label="bbb6"  id="51"/>
-					</item>
-				</item>
-				<item label="我的好友" id="1">
-					<item label="玩家a"  id="51"/>
-				</item>
-				<item label="陌生人" id="1">
-					<item label="玩家b"  id="51"/>
-				</item>
-				<item label="黑名单" id="1">
-					<item label="玩家c"  id="51"/>
-				</item>
-				</data>
-				
-			_tab4SP.addChild(_tree);
-			_tree.dataProvider = _xml;
-			var btn:Button;
-			btn = new Button();
-			btn.label = "成批插入";
-			btn.x = 350;
-			btn.addEventListener(MouseEvent.CLICK,onBtnClickF);
-			_tab4SP.addChild(btn);
-		
-			UI.creatButton("全部展开",_tab4SP,openAll,350,30);
-			UI.creatButton("全部收起",_tab4SP,closeAll,350,60);
-			UI.creatButton("碎片插入",_tab4SP,onBtnClick3,350,90);
-			UI.creatButton("删除单个",_tab4SP,onBtnClickDel,350,120);
-			
-			_label2 = new Label();
-			_label2.x = 400;
-			_label2.y = 400;
-			_tab4SP.addChild(_label2);
-		
-			_combo = new ComboBox();
-			_combo.addItem({label:1,value:1});
-			_combo.addItem({label:10,value:10});
-			_combo.addItem({label:50,value:50});
-			_combo.addItem({label:100,value:100});
-			_combo.addItem({label:300,value:300});
-			_combo.addItem({label:500,value:500});
-			_combo.addItem({label:1000,value:1000});
-			_tab4SP.addChild(_combo);
-			_combo.x = 500;
-			_combo.selectedIndex = 2;
+			Alert.show("提示窗口信息",null,null,"Hi",null,["一般","OK","test","更多..."]);
 		}
 		
 		protected function onDoubleClick(event:ListEvent):void
@@ -505,17 +577,13 @@ package
 			delete _xml.item[0].item[0].item[0];
 			if(_xml.item[0].item[0].children().length()==0)
 			{
-				trace("update************");
 				_tree.updateWholeTreeNow();
 			}
-			trace("--",getTimer()-t);
 		}
 		
 		private function openAll(event:MouseEvent):void
 		{
-			var t:int = getTimer();
 			_tree.expandChildrenOf(null,true);
-			trace("zk:",getTimer()-t);
 		}
 		
 		private function closeAll(event:MouseEvent):void
@@ -546,9 +614,7 @@ package
 				_count++;
 				var node:XML =
 					<item label="玩家"  id="51"/>
-				
 				node.@label = "玩家"+_count;
-				
 				_tree.addItemChildIn(node,_xml.item[0].item[0]);
 			}
 		}
@@ -564,7 +630,7 @@ package
 			var i:int = 0;
 			var item:CustomListItem;
 			_list.removeAll();
-			for(i=1;i<1001;i++)
+			for(i=1;i<501;i++)
 			{
 				_count ++;
 				item= new CustomListItem()
@@ -580,7 +646,7 @@ package
 			SkinManager.changeActionSkin(_colorCount);
 			updteSet();
 		}
-	
+		
 		protected function onBtnClick2(event:MouseEvent):void
 		{
 			_color2Count++;
@@ -588,5 +654,6 @@ package
 			SkinManager.changeActionSkin(_color2Count+100);
 			updteSet();
 		}
+		
 	}
 }

@@ -179,13 +179,13 @@ package cn.flashk.controls
 		 * @param icon 标签要显示的图标
 		 * @param isAbleClose 是否显示关闭按钮以让用户关闭标签（不管显示此按钮与否，都可通过编程方式关闭标签）
 		 */ 
-		public function addTab(tabName:String,content:DisplayObject,icon:Object=null,isAbleClose:Boolean=false):Tab{
+		public function addTab(tabName:String,content:DisplayObject,icon:Object=null,isAbleClose:Boolean=false,skinLinkage:String="",asSkinClass:Class=null):Tab{
 			var tab:Tab ;
             if(content == null) content = new Sprite();
-			tab = new Tab();
+			tab = new Tab(skinLinkage,asSkinClass);
 			tab.index = tabs.length;
 			tab.label = tabName;
-			tab.btn.addEventListener(MouseEvent.CLICK, switchToTabClick);
+			tab.btn.addEventListener(MouseEvent.MOUSE_DOWN, switchToTabClick);
 			tabs[tabs.length] = tab;
 			if(isAbleClose == false){
 				tab.setSize(tabName.length*12+30,tabHeight);

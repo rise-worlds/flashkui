@@ -16,13 +16,15 @@ package cn.flashk.controls.skin.sourceSkin
 	public class SliderSourceSkin extends SourceSkin
 	{
 		private static var bd:BitmapData;
-		private static var skin:DisplayObject;
-		private static var bds:Array;
-		private static var skinBG:DisplayObject;
-		private static var bdsBG:Array;
+		private var skin:DisplayObject;
+		private var bds:Array;
+		private var skinBG:DisplayObject;
+		private var bdsBG:Array;
 		
+		private static  var bgLink:String;
 		
 		public var sliderNum:uint;
+		public var useCatch:Boolean = true;
 		
 		private var sliders:Array = [];
 		private var shape:Sprite;
@@ -48,6 +50,11 @@ package cn.flashk.controls.skin.sourceSkin
 			spaceValue.mouseEnabled = false;
 			spaceMask = new Shape();
 			spaceValue.mask = spaceMask;
+		}
+		
+		public static function setNextSliderBgSkin(linkName:String):void
+		{
+			bgLink = linkName;
 		}
 		
 		public function get spaceView():DisplayObject
@@ -113,7 +120,11 @@ package cn.flashk.controls.skin.sourceSkin
 		}
 		
 		private function initBG():void{
-			var Skin:Class = SkinLoader.getClassFromSkinFile(SourceSkinLinkDefine.SLIDER_BACKGROUND);
+			if(bgLink == null){
+				bgLink = SourceSkinLinkDefine.SLIDER_BACKGROUND;
+			}
+			var Skin:Class = SkinLoader.getClassFromSkinFile(bgLink);
+			bgLink = SourceSkinLinkDefine.SLIDER_BACKGROUND;
 			if(skinBG == null){
 				skinBG = new Skin() as DisplayObject;
 			}
@@ -162,6 +173,8 @@ package cn.flashk.controls.skin.sourceSkin
 			bpBG.width = width;
 			bp.y = (tar.compoHeight-bp.height)/2;
 			bp2.y = bp.y;
+			spaceValue.width = tar.compoWidth;
+			spaceValue.visible = Slider(tar).showDragSpace;
 		}
 		
 		public function updateSliderSpace():void{

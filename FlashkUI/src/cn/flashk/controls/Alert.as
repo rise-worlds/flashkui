@@ -67,14 +67,14 @@ package cn.flashk.controls
         public static var customLabelsModify:Array = ["修改" , "取消"];
         public static var customLabelsDel:Array = ["删除" , "取消"];
         public static var customLabelsYesNo:Array = ["是" , "否"];
+		public static var mark:Sprite = new Sprite ();
 		
-		private static var mark:Sprite = new Sprite ();
-		protected static var _blurArray:Array = [];
+		private static var _blurArray:Array = [];
 
-        protected var info:TextField;
-        protected var tf2:TextFormat;
-        protected var btns:Array;
-        protected var callBackFun:Function;
+        protected var _info:TextField;
+        protected var _tf2:TextFormat;
+        protected var _btns:Array;
+        protected var _callBackFun:Function;
         protected var _textStr:String;
 		
         /**
@@ -89,101 +89,105 @@ package cn.flashk.controls
         public function Alert(text:String , title:String , icon:Object , buttonLabels:Array , closeFunction:Function , alertWidth:Number = 0)
         {
             super ();
-            tf2 = new TextFormat ();
-            tf2.font = DefaultStyle.font;
-            tf2.size = DefaultStyle.fontSize;
-            tf2.color = ColorConversion.transformWebColor (DefaultStyle.textColor);
-			tf2.leading = 7;
-            callBackFun = closeFunction;
+            _tf2 = new TextFormat ();
+            _tf2.font = DefaultStyle.font;
+            _tf2.size = DefaultStyle.fontSize;
+            _tf2.color = ColorConversion.transformWebColor( DefaultStyle.textColor );
+			_tf2.leading = 7;
+            _callBackFun = closeFunction;
             _textStr = text;
-            info = new TextField ();
-            info.multiline = true;
-            info.wordWrap = true;
-            info.y = tiHeight + 10;
-            info.x = _paddingLeft + 10;
+            _info = new TextField ();
+            _info.multiline = true;
+            _info.wordWrap = true;
+            _info.y = tiHeight + 10;
+            _info.x = _paddingLeft + 10;
             if (alertWidth > 0)
             {
-                info.width = alertWidth - info.x * 2;
+                _info.width = alertWidth - _info.x * 2;
             }
             else
             {
-                info.width = maxWidth - 50;
+                _info.width = maxWidth - 50;
             }
-            info.selectable = false;
-            info.htmlText = text;
-			info.setTextFormat(tf2);
-            info.width = info.textWidth + 15;
-            info.height = 600;
-            info.height = info.textHeight + 20;
-            info.blendMode = BlendMode.LAYER;
-			info.filters = textFilter;
+            _info.selectable = false;
+            _info.htmlText = text;
+			_info.setTextFormat( _tf2 );
+            _info.width = _info.textWidth + 15;
+            _info.height = 600;
+            _info.height = _info.textHeight + 20;
+            _info.blendMode = BlendMode.LAYER;
+			_info.filters = textFilter;
             this.title = title;
-            this.addChild (info);
-            draggingAlpha = 1.0;
-            showMaxButton = false;
-            showMiniButton = false;
-            if (icon != null)
+            this.addChild ( _info );
+            if ( icon != null )
             {
                 this.icon = icon;
             }
-            ableUserResizeWindow = false;
-            var wi:Number = info.width + info.x * 2;
-            if (wi < Alert.minWidth) wi = Alert.minWidth;
-            if (wi > Alert.maxWidth) wi = Alert.maxWidth;
-            setSize (wi , info.height + tiHeight + 51+Button.defaultHeihgt);
-            btns = new Array ();
+            var wi:Number = _info.width + _info.x * 2;
+            if ( wi < Alert.minWidth ) wi = Alert.minWidth;
+            if ( wi > Alert.maxWidth ) wi = Alert.maxWidth;
+            setSize( wi, _info.height + tiHeight + 51 + Button.defaultHeihgt );
+            _btns = new Array ();
             var btn:Button;
-            for (var i:int = 0 ; i < buttonLabels.length ; i++)
+            for ( var i:int = 0 ; i < buttonLabels.length ; i++ )
             {
                 btn = new Button ();
-                btn.label = String (buttonLabels[i]);
-                btns.push (btn);
-                this.addChild (btn);
-                btn.y = _compoHeight - Alert.paddingBottom-btn.height+19;
-                btn.addEventListener (MouseEvent.CLICK , close);
+                btn.label = String ( buttonLabels[ i ] );
+                _btns.push ( btn );
+                this.addChild ( btn );
+                btn.y = _compoHeight - Alert.paddingBottom - btn.height + 19;
+                btn.addEventListener ( MouseEvent.CLICK , close );
             }
             var space:Number = 10;
-            if (btns.length == 2)
+            if ( _btns.length == 2 )
                 space = 20;
-            if (btns.length == 3)
+            if ( _btns.length == 3 )
                 space = 15;
-            if (btns.length == 4)
+            if ( _btns.length == 4 )
                 space = 10;
-            if (btns.length > 4)
+            if ( _btns.length > 4 )
                 space = 5;
             var allw:Number = 0;
-            for (i = 0 ; i < btns.length ; i++)
+            for ( i = 0 ; i < _btns.length ; i++ )
             {
-                allw += Button (btns[i]).compoWidth + space;
+                allw += Button ( _btns[ i ] ).compoWidth + space;
             }
             allw -= space;
-            var stx:Number = int ((_compoWidth - allw) / 2);
+            var stx:Number = int ( ( _compoWidth - allw ) / 2 );
             if (stx < 20)
                 stx = 20;
-            Button (btns[0]).x = stx;
+            Button ( _btns[ 0 ] ).x = stx;
             var btnWidth:Number = 0;
-            if (btns.length > 1)
+            if ( _btns.length > 1 )
             {
-                for (i = 1 ; i < btns.length ; i++)
+                for ( i = 1 ; i < _btns.length ; i++ )
                 {
-                    Button (btns[i]).x = Button (btns[i - 1]).x + Button (btns[i - 1]).compoWidth + space;
+                    Button ( _btns[ i ]).x = Button ( _btns[ i - 1 ]).x + Button ( _btns[ i - 1 ]).compoWidth + space;
                 }
             }
-            btnWidth = Button (btns[btns.length - 1]).x + Button (btns[btns.length - 1]).width + stx;
-            if (btnWidth > wi)
+            btnWidth = Button ( _btns[ _btns.length - 1 ]).x + Button ( _btns[ _btns.length - 1 ]).width + stx;
+            if ( btnWidth > wi )
             {
                 wi = btnWidth;
-                setSize (wi , info.height + tiHeight + 51+Button.defaultHeihgt);
+                setSize ( wi , _info.height + tiHeight + 51 + Button.defaultHeihgt );
             }
-            closeBtn.toolTip = "关闭消息";
         }
+		
+		override protected function onAddStageInitButton(event:Event):void
+		{
+			super.onAddStageInitButton( event );
+			showMaxButton = false;
+			showMiniButton = false;
+			ableUserResizeWindow = false;
+//			closeBtn.toolTip = "关闭消息";
+		}
 
         /**
          * 此Alert里面一排按钮实例的数组，按钮为Button，可以对这些按钮使用Button的方法，如设置图标，更改高度，宽度，位置
          */
         public function get buttons():Array
         {
-            return btns;
+            return _btns;
         }
 
         /**
@@ -191,7 +195,7 @@ package cn.flashk.controls
          */
         public function get infoTextField():TextField
         {
-            return info;
+            return _info;
         }
 
         /**
@@ -201,15 +205,15 @@ package cn.flashk.controls
          */
         public function set textStyleSheet(style:StyleSheet):void
         {
-            info.styleSheet = style;
-            info.htmlText = _textStr;
+            _info.styleSheet = style;
+            _info.htmlText = _textStr;
         }
 		
 		public function set htmlText(value:String):void
 		{
 			
-			info.htmlText = value;
-			info.setTextFormat(tf2);
+			_info.htmlText = value;
+			_info.setTextFormat(_tf2);
 		}
 
         /**
@@ -219,7 +223,7 @@ package cn.flashk.controls
          */
         public function replaceTextByDisplay(displayObject:DisplayObject):void
         {
-            info.visible = false;
+            _info.visible = false;
             this.addChild (displayObject);
         }
 
@@ -242,7 +246,7 @@ package cn.flashk.controls
                     }
                     else
                     {
-                        lab = Button (btns[index - 1]).label;
+                        lab = Button (_btns[index - 1]).label;
                     }
                 }
                 else
@@ -254,19 +258,19 @@ package cn.flashk.controls
                     }
                     else
                     {
-                        for (var i:int = 0 ; i < btns.length ; i++)
+                        for (var i:int = 0 ; i < _btns.length ; i++)
                         {
-                            if (btns[i] == event.currentTarget)
+                            if (_btns[i] == event.currentTarget)
                             {
                                 index = i + 1;
-                                lab = Button (btns[i]).label;
+                                lab = Button (_btns[i]).label;
                             }
                         }
                     }
                 }
-                if (callBackFun != null)
+                if (_callBackFun != null)
                 {
-                    callBackFun (new AlertCloseEvent ("close" , index , lab));
+                    _callBackFun (new AlertCloseEvent ("close" , index , lab));
                 }
             }
             super.close (event);
@@ -320,19 +324,45 @@ package cn.flashk.controls
                 mark.graphics.clear ();
                 mark.graphics.beginFill (maskColor , maskAlpha);
                 mark.graphics.drawRect (0 , 0 , 3500 , 2880);
+				mark.addEventListener(MouseEvent.CLICK,onMarkClick);
                 parentContainer.addChild (mark);
             }
             parentContainer.addChild (alert);
             alert.addEventListener ("close" , checkRemoveMark);
             return alert;
         }
-
+		
+		protected static function onMarkClick(event:MouseEvent):void
+		{
+			nowAlert = mark.parent.getChildAt(mark.parent.numChildren-1) as Alert;
+			if(nowAlert){
+				index = -1;
+				nowAlert.addEventListener(Event.ENTER_FRAME,showFocus);
+			}
+			
+		}
+		
+		protected static function showFocus(event:Event):void
+		{
+			index++;
+			if(index < maskClickAlphas.length){
+				nowAlert.alpha = maskClickAlphas[index];
+			}else{
+				nowAlert.removeEventListener(Event.ENTER_FRAME,showFocus);
+			}
+		}
+		
+		private static var nowAlert:Alert;
+		private static var index:int=0;
+		
+		public static var maskClickAlphas:Array = [0.8,1,0.8,1,0.8,1,0.8,1];
+		
         override public function setSize(newWidth:Number , newHeight:Number):void
         {
             super.setSize (newWidth , newHeight);
-            if (info)
+            if (_info)
             {
-                info.width = newWidth - info.x * 2;
+                _info.width = newWidth - _info.x * 2;
             }
         }
 

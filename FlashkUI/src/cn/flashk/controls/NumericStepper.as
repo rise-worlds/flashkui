@@ -105,11 +105,18 @@ package cn.flashk.controls
 		{
 			txt.text = Number(txt.text).toFixed(String(divisor).length-1);
 			if(txt.text == "0.") txt.text = "0";
-			if(Number(txt.text)> _maximum/divisor) txt.text = Number(_maximum/divisor).toFixed(String(divisor).length-1);
-			if(Number(txt.text)< _minimum/divisor) txt.text = Number(_minimum/divisor).toFixed(String(divisor).length-1);
+			if(Number(txt.text)> _maximum/divisor) {
+				txt.text = Number(_maximum/divisor).toFixed(String(divisor).length-1);
+				this.dispatchEvent(new Event(Event.CHANGE));
+			}
+			if(Number(txt.text)< _minimum/divisor) {
+				txt.text = Number(_minimum/divisor).toFixed(String(divisor).length-1);
+				this.dispatchEvent(new Event(Event.CHANGE));
+			}
 		}
 		
 		override protected function updateSkinPro():void{
+			if(sh == null) return;
 			sh.graphics.beginFill(SkinThemeColor.arrowFillColor, 1);
 			var a:Number =0;
 			var b:Number = -7;
@@ -135,16 +142,17 @@ package cn.flashk.controls
 		protected function upFrame(event:MouseEvent):void
 		{
 			id = setTimeout(upFrameMain,500);
+			this.stage.addEventListener(MouseEvent.MOUSE_UP,clearUpFrame);
 		}
 		
 		private function upFrameMain():void{
 			count =0;
 			this.addEventListener(Event.ENTER_FRAME,addByFrame);
-			this.stage.addEventListener(MouseEvent.MOUSE_UP,clearUpFrame);
 		}
 		
 		protected function clearUpFrame(event:MouseEvent):void
 		{
+			clearTimeout(id);
 			this.removeEventListener(Event.ENTER_FRAME,addByFrame);
 			this.stage.removeEventListener(MouseEvent.MOUSE_UP,clearUpFrame);
 		}
@@ -161,16 +169,17 @@ package cn.flashk.controls
 		protected function downFrame(event:MouseEvent):void
 		{
 			id = setTimeout(downFrameMain,500);
+			this.stage.addEventListener(MouseEvent.MOUSE_UP,cleardownFrame);
 		}
 		
 		private function downFrameMain():void{
 			count =0;
 			this.addEventListener(Event.ENTER_FRAME,lessByFrame);
-			this.stage.addEventListener(MouseEvent.MOUSE_UP,cleardownFrame);
 		}
 		
 		protected function cleardownFrame(event:MouseEvent):void
 		{
+			clearTimeout(id);
 			this.removeEventListener(Event.ENTER_FRAME,lessByFrame);
 			this.stage.removeEventListener(MouseEvent.MOUSE_UP,cleardownFrame);
 		}
@@ -233,6 +242,7 @@ package cn.flashk.controls
 			va = va *divisor;
 			txt.text = Number(va/_divisor).toFixed(String(divisor).length-1);
 			if(txt.text == "0.") txt.text = "0";
+			this.dispatchEvent(new Event(Event.CHANGE));
 		}
 		
 		public function get value():Number{

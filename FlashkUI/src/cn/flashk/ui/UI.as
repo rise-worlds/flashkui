@@ -19,6 +19,8 @@ package cn.flashk.ui
     import cn.flashk.controls.VScrollBar;
     import cn.flashk.controls.layout.Align;
     import cn.flashk.controls.managers.SkinThemeColor;
+    import cn.flashk.controls.managers.UISet;
+    import cn.flashk.controls.support.ColorMatrix;
     import cn.flashk.controls.support.Tab;
     import cn.flashk.controls.support.UIComponent;
     
@@ -27,6 +29,7 @@ package cn.flashk.ui
     import flash.display.Sprite;
     import flash.display.Stage;
     import flash.events.MouseEvent;
+    import flash.filters.ColorMatrixFilter;
     import flash.text.TextField;
 
     /**
@@ -40,10 +43,53 @@ package cn.flashk.ui
         private static var _maxStep:uint = 1000;
         private static var _stepCount:uint;
         private static var _addI:int;
+		private static var _disColor:ColorMatrixFilter;
+		
         
         public function UI()
         {
         }
+		
+		public static function removeAllChilds(targetSprite:Sprite):void
+		{
+			while(targetSprite.numChildren>0){
+				targetSprite.removeChildAt(0);
+			}
+		}
+		
+		public static function setXY(target:DisplayObject,x:Number,y:Number,isIntXY:Boolean=true):void
+		{
+			if(isIntXY == true){
+				target.x = int(x);
+				target.y = int(y);
+			}else{
+				target.x = x;
+				target.y = y;
+			}
+		}
+		
+		public static function get disableFilter():Array
+		{
+			if(_disColor == null){
+				var mat:ColorMatrix = new ColorMatrix ();
+				mat.adjustHue (UISet.disableHSB[0]);
+				mat.adjustSaturation (UISet.disableHSB[1]);
+				mat.adjustBrightness (UISet.disableHSB[2]);
+				mat.adjustContrast (UISet.disableHSB[3]);
+				_disColor = new ColorMatrixFilter (mat);
+			}
+			return [_disColor];
+		}
+		
+		public static function get stage():Stage
+		{
+			return UIComponent.stage;
+		}
+		
+		public static function get topSprite():DisplayObjectContainer
+		{
+			return UIComponent.stage;
+		}
 
         public static function get maxStep():uint
         {
@@ -65,11 +111,11 @@ package cn.flashk.ui
             _stepCount = 0;
             buildOneSprite(target);
         }
-		public static function init(stage:Stage):void
+		public static function init(stage:Stage,colorStyle:int=32):void
 		{
 			UIComponent.stage = stage;
 			Align.stage = stage;
-			SkinThemeColor.userDefaultColor(32);
+			SkinThemeColor.userDefaultColor(colorStyle);
 		}
 		/**
 		 * 创建一个按钮 

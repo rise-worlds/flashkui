@@ -1,14 +1,5 @@
 package cn.flashk.controls 
 {
-	import flash.display.Bitmap;
-	import flash.display.BitmapData;
-	import flash.display.BlendMode;
-	import flash.display.DisplayObject;
-	import flash.events.MouseEvent;
-	import flash.text.TextField;
-	import flash.text.TextFormat;
-	import flash.text.TextFormatAlign;
-	
 	import cn.flashk.controls.managers.DefaultStyle;
 	import cn.flashk.controls.managers.SkinLoader;
 	import cn.flashk.controls.managers.SkinManager;
@@ -20,6 +11,18 @@ package cn.flashk.controls
 	import cn.flashk.controls.skin.ButtonSkin;
 	import cn.flashk.controls.skin.sourceSkin.ButtonSourceSkin;
 	import cn.flashk.controls.support.ColorConversion;
+	
+	import flash.display.Bitmap;
+	import flash.display.BitmapData;
+	import flash.display.BlendMode;
+	import flash.display.DisplayObject;
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	import flash.text.TextField;
+	import flash.text.TextFormat;
+	import flash.text.TextFormatAlign;
+	import flash.utils.getTimer;
+	import flash.utils.setTimeout;
 	
 	/**
 	 * 设置按钮文本的颜色（默认和鼠标划出）
@@ -185,9 +188,40 @@ package cn.flashk.controls
 		protected var _isOutSkinHide:Boolean = false;
 		protected var _skinUseCatch:Boolean = false;
 		protected var _isAutoCheckTextSizeAndResetSize:Boolean = true;
+		protected var _skinLinkage:String;
+		protected var _asSkinClass:Class;
+		protected var _isInitSkin:Boolean = false;
+		protected var _lastTimeOutTime:int=0;
+		protected var _laterTime:int;
+		protected var _bakLabel:String;
+		protected var _startTime:int;
+		protected var _textApped:String;
+		protected var _formatValue:int;
+		protected var _isCoolLess:Boolean;
+		protected var _autoDisableMouse:Boolean = false;
+		protected var _autoDisableMouseCD:int = 700;
+		protected var _lastClickTime:int=0;
 		
-		public function Button() 
+		/**
+		 *  new Button("SkinButton3",MyButtonSkin);
+		 * @param skinLinkage 在swf皮肤模式下要使用的按钮皮肤的库链接名
+		 * @param asSkinClass 在as皮肤模式下要使用的按钮皮肤渲染器
+		 * 
+		 */
+		public function Button(skinLinkage:String="",asSkinClass:Class=null) 
 		{
+			if(_isInitSkin == false){
+				_skinLinkage = skinLinkage;
+				_skinUseCatch = false;
+				if(_skinLinkage == ""){
+					_skinLinkage = SourceSkinLinkDefine.BUTTON;
+					_skinUseCatch = true;
+				}
+				_asSkinClass = asSkinClass;
+				if(_asSkinClass == null){
+					_asSkinClass = ButtonSkin;
+				}
+			}
 			super();
 			_compoWidth = defaultWidth;
 			_compoHeight = defaultHeihgt;
@@ -211,6 +245,7 @@ package cn.flashk.controls
 			this.addEventListener(MouseEvent.MOUSE_OUT, showOut);
 			this.addEventListener(MouseEvent.MOUSE_DOWN, showDown);
 			this.addEventListener(MouseEvent.MOUSE_UP, showUp);
+			this.addEventListener(MouseEvent.CLICK,onClickMe);
 			this.cacheAsBitmap = UISet.buttonCatchAsBitmap;
 		}
 		
@@ -223,6 +258,63 @@ package cn.flashk.controls
 		{
 			_isAutoCheckTextSizeAndResetSize = value;
 		}
+		
+		public function get autoDisableMouseCD():int
+		{
+			return _autoDisableMouseCD;
+		}
+		
+		/**
+		 * 是否自动用户点击之后在某个时间内禁止鼠标事件 CD的时间 （毫秒）
+		 * @param value
+		 * 
+		 */
+		public function set autoDisableMouseCD(value:int):void
+		{
+			_autoDisableMouseCD = value;
+		}
+		
+		public function get autoDisableMouse():Boolean
+		{
+			return _autoDisableMouse;
+		}
+		
+		/**
+		 * 是否自动用户点击之后在某个时间内禁止鼠标事件 
+		 * @param value
+		 * 
+		 */
+		public function set autoDisableMouse(value:Boolean):void
+		{
+			_autoDisableMouse = value;
+		}
+		
+		override public function set enabled(value:Boolean):void
+		{
+			super.enabled = value;
+			if(_autoDisableMouse && getTimer()-_lastClickTime < _autoDisableMouseCD){
+				this.mouseChildren = false;
+				this.mouseEnabled = false;
+			}
+		}
+		
+		protected function onClickMe(event:MouseEvent):void
+		{
+			if(_autoDisableMouse == true){
+				this.mouseChildren = false;
+				this.mouseEnabled = false;
+				_lastClickTime = getTimer();
+				setTimeout(ableMyMouse,_autoDisableMouseCD);
+			}
+		}
+		
+		private function ableMyMouse(obj:Object=null):void
+		{
+			if(_enabled == true){
+				this.mouseChildren = true;
+				this.mouseEnabled = true;
+			}
+		}
 
 		override protected function updateSkinBefore():void
 		{
@@ -233,12 +325,11 @@ package cn.flashk.controls
 		}
 		
 		override public function setDefaultSkin():void {
-			setSkin(ButtonSkin);
+			setSkin(_asSkinClass);
 		}
 		
 		override public function setSourceSkin():void {
-			_skinUseCatch = true;
-			setSkin(SkinLoader.getClassFromSkinFile(SourceSkinLinkDefine.BUTTON));
+			setSkin(SkinLoader.getClassFromSkinFile(_skinLinkage));
 		}
 		
 		override public function setSkin(Skin:Class):void {
@@ -305,6 +396,102 @@ package cn.flashk.controls
 			}
 			this.addChild(iconBD);
 			reAlign();
+		}
+		
+		
+		/**
+		 * CD按钮 
+		 * @param laterTime 毫秒
+		 * @param textAppend 后面追加文字格式，如"(*)",星号会被替换为数字，如显示成 整理(5) 
+		 * @param formatValue 数字的精确度，1为秒，2为0.1秒
+		 * 
+		 */
+		public function disableAndAbleLater(laterTime:int,textAppend:String="$*",formatValue:int=1):void
+		{
+			enabled = false;
+			_startTime = getTimer();
+			if(_startTime - _lastTimeOutTime > _laterTime || _lastTimeOutTime == 0){
+				_laterTime = laterTime;
+				_lastTimeOutTime = _startTime;
+			}else{
+				_laterTime = _laterTime-(getTimer()-_lastTimeOutTime)+laterTime;
+				_lastTimeOutTime = _startTime;
+			}
+			_bakLabel = label;
+			_textApped = textAppend;
+			_formatValue = formatValue;
+			startCDUpdate();
+		}
+		
+		public function clearCDUpdate():void
+		{
+			this.removeEventListener(Event.ENTER_FRAME,updateLabel);
+			_isCoolLess = false;
+		}
+		
+		public function startCDUpdate():void
+		{
+			this.addEventListener(Event.ENTER_FRAME,updateLabel);
+			_isCoolLess = true;
+		}
+		
+		/**重新获取CD时间，重新得到按钮的CD状态
+		 * @return Boolean	按钮是否还在CD中
+		 */		
+		public function resetCD():Boolean
+		{
+			var t:int = getTimer();
+			if(_lastTimeOutTime+_laterTime > t){
+				startCDUpdate();
+				enabled = false;
+				return true;
+			}else
+			{
+				setAbleLater();
+				return false;
+			}
+		}
+		
+		public function stopDisable():void
+		{
+			setAbleLater();
+		}
+		
+		protected function updateLabel(event:Event):void
+		{
+			var t:int = _laterTime-(getTimer()-_startTime);
+			var v:Number;
+			var vstr:String;
+			if(t<0){
+				t = 0;
+			}
+			if(_formatValue == 1){
+				v = Math.ceil(t/1000);
+				vstr = _textApped.replace("*",v);
+				vstr = vstr.replace("$",_bakLabel);
+			}else{
+				v = Math.ceil(t/100)/10;
+				vstr = _textApped.replace("*",v.toFixed(1));
+				vstr = vstr.replace("$",_bakLabel);
+			}
+			if(txt){
+				txt.htmlText = vstr;
+			}
+			if(t==0){
+				setAbleLater();
+			}
+		}
+		
+		public function showAsNoCDLabel():void
+		{
+			clearCDUpdate();
+		}
+		
+		protected function setAbleLater():void
+		{
+			enabled = true;
+			clearCDUpdate();
+			label = _bakLabel;
 		}
 		
 		/**
@@ -456,7 +643,6 @@ package cn.flashk.controls
 				styleSet[ ButtonStyle.TEXT_DOWN_COLOR ] = DefaultStyle.buttonDownTextColor;
 			}
 			initTextColor();
-			
 			this.filters = DefaultStyle.buttonFilter;
 			if(txt)
 			{

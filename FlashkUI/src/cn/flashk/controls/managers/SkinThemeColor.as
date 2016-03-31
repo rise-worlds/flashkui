@@ -70,18 +70,15 @@ package cn.flashk.controls.managers
 		public static function initImageFillStyle(fillGraphics:Graphics,width:Number,height:Number,angle:Number=-1):void
 		{
 			fillGraphics.lineStyle(1, imageBorderColor,imageBorderAlpha,DefaultStyle.pixelHinting,LineScaleMode.NORMAL,CapsStyle.ROUND,JointStyle.ROUND,3);
-			if(imageFillColors.length>1)
-			{
+			if(imageFillColors.length>1){
 				var mat:Matrix;
 				mat = new Matrix();
-				if(angle == -1)
-				{
+				if(angle == -1){
 					angle = imageFillAngle;
 				}
 				mat.createGradientBox(width, height, angle* Math.PI/180);
 				fillGraphics.beginGradientFill(GradientType.LINEAR, imageFillColors, imageFillAlphas, imageFillRatios, mat);
-			}else
-			{
+			}else{
 				fillGraphics.beginFill(fillColors[0],fillAlphas[0]);
 			}
 		}
@@ -89,18 +86,15 @@ package cn.flashk.controls.managers
 		public static function initFillStyle(fillGraphics:Graphics,width:Number,height:Number,angle:Number=-1):void
 		{
 			fillGraphics.lineStyle(1, SkinThemeColor.border,borderAlpha,DefaultStyle.pixelHinting,LineScaleMode.NORMAL,CapsStyle.ROUND,JointStyle.ROUND,3);
-			if(fillColors.length>1)
-			{
+			if(fillColors.length>1){
 				var mat:Matrix;
 				mat = new Matrix();
-				if(angle == -1)
-				{
+				if(angle == -1){
 					angle = fillAngle;
 				}
 				mat.createGradientBox(width, height, angle* Math.PI/180);
 				fillGraphics.beginGradientFill(GradientType.LINEAR, fillColors, fillAlphas, fillRatios, mat);
-			}else
-			{
+			}else{
 				fillGraphics.beginFill(fillColors[0],fillAlphas[0]);
 			}
 		}
@@ -108,18 +102,15 @@ package cn.flashk.controls.managers
 		public static function initScrollerFillStyle(fillGraphics:Graphics,width:Number,height:Number,angle:Number=-1):void
 		{
 			fillGraphics.lineStyle(1, SkinThemeColor.scrollbarBorderColor,scrollbarBorderAlpha,DefaultStyle.pixelHinting,LineScaleMode.NORMAL,CapsStyle.ROUND,JointStyle.ROUND,3);
-			if(scrollBarFillColors.length>1)
-			{
+			if(scrollBarFillColors.length>1){
 				var mat:Matrix;
 				mat = new Matrix();
-				if(angle == -1)
-				{
+				if(angle == -1){
 					angle = scrollBarFillAngle;
 				}
 				mat.createGradientBox(width, height, angle* Math.PI/180);
 				fillGraphics.beginGradientFill(GradientType.LINEAR, scrollBarFillColors, scrollBarFillAlphas,scrollBarFillRatios, mat);
-			}else
-			{
+			}else{
 				fillGraphics.beginFill(scrollBarFillColors[0],scrollBarFillAlphas[0]);
 			}
 		}
@@ -127,14 +118,11 @@ package cn.flashk.controls.managers
 		public static function initBarFillStyle(fillGraphics:Graphics,width:Number,height:Number):void
 		{
 			var mat:Matrix;
-			if(scrollBarBarFillColors.length>1)
-			{
+			if(scrollBarBarFillColors.length>1){
 				mat = new Matrix();
-				
 				mat.createGradientBox(width, height, scrollBarBarFillAngle* Math.PI / 180);
 				fillGraphics.beginGradientFill(GradientType.LINEAR, scrollBarBarFillColors, scrollBarBarFillAlphas, scrollBarBarFillRatios, mat);
-			}else
-			{
+			}else{
 				fillGraphics.beginFill(scrollBarBarFillColors[0],scrollBarBarFillAlphas[0]);
 			}
 		}
@@ -146,13 +134,11 @@ package cn.flashk.controls.managers
 			var alphas:Array;
 			var ratios:Array;
 			fillGraphics.lineStyle(1, SkinThemeColor.border,borderAlpha,DefaultStyle.pixelHinting,LineScaleMode.NORMAL,CapsStyle.ROUND,JointStyle.ROUND,3);
-			if(textInputFillColors.length>1)
-			{
+			if(textInputFillColors.length>1){
 				mat = new Matrix();
 				mat.createGradientBox(width, height, textInputFillAngle * Math.PI / 180);
 				fillGraphics.beginGradientFill(GradientType.LINEAR, textInputFillColors, textInputFillAlphas, textInputFillRatios, mat);
-			}else
-			{
+			}else{
 				fillGraphics.beginFill(textInputFillColors[0],textInputFillAlphas[0]);
 			}
 		}
@@ -189,7 +175,7 @@ package cn.flashk.controls.managers
 			StyleManager.listIndex2Alpha = 0;
 			StyleManager.treeIndex1Alpha = 0.05;
 			StyleManager.treeIndex2Alpha = 0;
-			
+			DefaultStyle.filters = [];
 			DefaultStyle.buttonFilter = null;
 			DefaultStyle.scrollbarFilter = null;
 			DefaultStyle.buttonTextFilters = null;
@@ -203,8 +189,7 @@ package cn.flashk.controls.managers
 			 scrollBarBarFillAngle = 0;
 			 scrollBarBarFillAlphas =  [1.0, 1.0];
 			 scrollBarBarFillRatios = [0, 255];
-			 if(themeIndex != 80)
-			 {
+			 if(themeIndex != 80) {
 				 MotionSkinControl.RBG = [1,1,1];
 				 MotionSkinControl.multiplier = 1.5;
 			 }
@@ -859,23 +844,19 @@ package cn.flashk.controls.managers
 				
 				isInit = true;
 			}
-			if(themeIndex<71 || themeIndex == 80)
-			{
+			if(themeIndex<71 || themeIndex == 80){
 				co = themColors[themeIndex];
 				SkinThemeColor.border = co.border;
 				SkinThemeColor.top = co.top;
 				SkinThemeColor.upperMiddle = co.upperMiddle;
 				SkinThemeColor.lowerMiddle = co.lowerMiddle;
 				SkinThemeColor.bottom = co.bottom;
-				if(themeIndex != 69)
-				{
+				if(themeIndex != 69){
 					SkinThemeColor.itemOverColor = SkinThemeColor.bottom;
-				}else
-				{
+				}else{
 					SkinThemeColor.itemOverColor = 0x3c81c4;
 				}
-				if(co.itemOverTextColor != null)
-				{
+				if(co.itemOverTextColor != null){
 					SkinThemeColor.itemOverTextColor = co.itemOverTextColor;
 				}
 				if (co.defaultStyles is Array) {
@@ -883,8 +864,7 @@ package cn.flashk.controls.managers
 				}
 				DefaultStyle.windowButtonOverFilter = [new GlowFilter(SkinThemeColor.border,1,4,4,0.7,1)];
 				fillColors = [SkinThemeColor.top, SkinThemeColor.upperMiddle, SkinThemeColor.lowerMiddle, SkinThemeColor.bottom];
-				if(themeIndex==2)
-				{
+				if(themeIndex==2){
 					fillColors = [0xFFFFFF, 0xAAAAAA];
 					fillAlphas = [1,1];
 					fillRatios = [0,255];
@@ -916,8 +896,7 @@ package cn.flashk.controls.managers
 				scrollBarFillRatios = fillRatios;
 				scrollBarFillAlphas = fillAlphas;
 				arrowFillColor = border;
-				if(themeIndex == 80)
-				{
+				if(themeIndex == 80){
 					DefaultStyle.ellipse = 0;
 					DefaultStyle.scrollBarRound = 0;
 					SkinThemeColor.itemOverColor = 0x6EB3F6;
@@ -931,21 +910,18 @@ package cn.flashk.controls.managers
 					scrollBarFillColors=[0xCCCCCC];
 					scrollbarBorderColor = 0x999999;
 					listBackgroundFillColors = [SkinThemeColor.itemOverColor];
-				}else
-				{
+				}else{
 					MotionSkinControl.RBG = [1,1,1];
 					MotionSkinControl.multiplier =1.5;
 				}
-			}else
-			{
+			}else{
 				MotionSkinControl.RBG = [1,1,1];
 				MotionSkinControl.multiplier =1.5;
 //				MotionSkinControl.multiplier = 2.5;
 				arrowFillColor = 0x000000;
 				DefaultStyle.checkBoxLineColor = "#990000";
 				fillAlphas = [1,1,1,1];
-				switch(themeIndex)
-				{
+				switch(themeIndex){
 					case 71:
 						DefaultStyle.ellipse = 0;
 						fillColors = [0xEFEFEF];
@@ -962,7 +938,6 @@ package cn.flashk.controls.managers
 						scrollBarShapeColor2 = 0x333333;
 						scrollBarShapeAlpha2 = 0.3;
 						break;
-					
 					case 72:
 						DefaultStyle.ellipse = 0;
 						fillColors = [0xEE8787];
@@ -979,7 +954,6 @@ package cn.flashk.controls.managers
 						scrollBarShapeAlpha2 = 0.3;
 						scrollBarFillColors =  [0xEE8787];
 						break;
-					
 					case 73:
 						DefaultStyle.ellipse = 0;
 						fillColors = [0xF0F0F0];
@@ -995,7 +969,6 @@ package cn.flashk.controls.managers
 						scrollBarShapeColor2 = 0x333333;
 						scrollBarShapeAlpha2 = 0.3;
 						break;
-					
 					case 74:
 						fillColors = [0xFCECFC,0xFBA7E1,0xFD88D7,0xFF9CE1];
 						fillAlphas = [1,1,1,1];
@@ -1007,7 +980,6 @@ package cn.flashk.controls.managers
 						DefaultStyle.checkBoxLineColor = "#910463";
 						arrowFillColor = border;
 						break;
-					
 					case 75:
 						fillColors = [0xFCECFC,0xFBA7E1,0xFD88D7,0xFF9CE1];
 						fillAlphas = [1,1,1,1];
@@ -1019,7 +991,6 @@ package cn.flashk.controls.managers
 						DefaultStyle.checkBoxLineColor = "#910463";
 						arrowFillColor = border;
 						break;
-					
 					case 76:
 						fillColors = [0xFCECFC,0xFBA7E1,0xFD88D7,0xFF9CE1];
 						fillAlphas = [1,1,1,1];
@@ -1031,7 +1002,6 @@ package cn.flashk.controls.managers
 						DefaultStyle.checkBoxLineColor = "#910463";
 						arrowFillColor = border;
 						break;
-					
 					case 77:
 						DefaultStyle.ellipse = 0;
 						DefaultStyle.scrollBarRound = 0;
@@ -1048,7 +1018,6 @@ package cn.flashk.controls.managers
 						SkinThemeColor.itemOverTextColor = 0x000000;
 						DefaultStyle.buttonTextFilters = [ new DropShadowFilter(1,90,0xFFFFFF,1,1,1,0.55,1)];
 						break;
-					
 					case 78:
 						DefaultStyle.ellipse = 0;
 						DefaultStyle.scrollBarRound = 0;
@@ -1063,8 +1032,8 @@ package cn.flashk.controls.managers
 						DefaultStyle.checkBoxLineColor = "#515151";
 						arrowFillColor = 0x515151;
 						SkinThemeColor.itemOverTextColor = 0x000000;
-						DefaultStyle.buttonFilter = [new BevelFilter(1.5,45,0xFFFFFF,1,0,1,1.3,1.3,1.2)];
-//						DefaultStyle.scrollbarFilter = [new BevelFilter(1.2,45,0xFFFFFF,1.5,0,1,1.5,1.5,1.2)];
+						DefaultStyle.filters = [new BevelFilter(1,45,0xffffff,1,0,1,1.9,1.9,1.3,1)];
+						DefaultStyle.listBackgroundEllipse = 0;
 						break;
 				}
 				scrollBarFillAlphas = fillAlphas;
@@ -1073,8 +1042,7 @@ package cn.flashk.controls.managers
 				imageBorderColor = border;
 				imageBorderAlpha = 0.5;
 				DefaultStyle.windowButtonOverFilter = [new GlowFilter(SkinThemeColor.border,1,4,1.4,1.2,1)];
-				if(themeIndex>73 && themeIndex <80)
-				{
+				if(themeIndex>73 && themeIndex <80){
 					scrollBarFillColors = fillColors;
 					scrollBarFillAlphas = fillAlphas;
 					scrollBarFillRatios = fillRatios;
@@ -1088,8 +1056,7 @@ package cn.flashk.controls.managers
 					imageBorderAlpha = 0.5;
 				}
 			}	
-			if(themeIndex == 80)
-			{
+			if(themeIndex == 80){
 				scrollBarFillColors=[0xCCCCCC];
 				scrollbarBorderColor = 0xCCCCCC;
 				scrollBarBarFillColors = [0xEFEFEF]
@@ -1097,327 +1064,243 @@ package cn.flashk.controls.managers
 				MotionSkinControl.RBG = [0.44,0.53,0.81];
 				MotionSkinControl.multiplier = 4.5;
 			}
-			if(themeIndex ==15 || themeIndex ==50)
-			{
+			if(themeIndex ==15 || themeIndex ==50){
 				arrowFillColor = 0xFFFFFF;
 			}
-			if(themeIndex ==47 )
-			{
+			if(themeIndex ==47 ){
 				listBackgroundFillColors = [0xd5fe64,0x7fe51e];
 				listBackgroundFillAlphas = [1,1];
 				listBackgroundFillRatios=[0,255];
 				listBackgroundFillAngle = 90;
 				DefaultStyle.scrollBarRound = 20;
 			}
-			switch(themeIndex)
-			{
+			switch(themeIndex){
 				case 2:
 					arrowFillColor = 0x333333;
 					scrollBarShapeColor1 = 0x666666;
 					break;
-				
 				case 6:
 					arrowFillColor = 0x333333;
 					scrollBarShapeColor1 = 0x333333;
 					break;
-				
 				case 9:
 					arrowFillColor = 0xFFFFFF
 					scrollBarShapeColor1 = 0xFFFFFF;
 					scrollBarShapeAlpha2 = 0;
 					break;
-				
-				
 				case 10:
 					arrowFillColor = 0xFFFFFF
 					scrollBarShapeColor1 = 0xFFFFFF;
 					scrollBarShapeAlpha2 = 0;
 					break;
-					
-					
 				case 12:
 					arrowFillColor = 0x000000;
 					scrollBarShapeColor1 = 0x000000;
 					break;
-				
-				
 				case 13:
 					arrowFillColor = 0x781d00;
 					scrollBarShapeColor1 = 0x781d00;
 					break;
-				
-				
 				case 14:
 					arrowFillColor = 0xFFFFFF
 					scrollBarShapeColor1 = 0xFFFFFF;
 					DefaultStyle.checkBoxLineColor = "#FFFFFF";
 					scrollBarShapeAlpha2 = 0;
 					break;
-					
-					
 				case 17:
 					arrowFillColor = 0xFFFFFF
 					scrollBarShapeColor1 = 0xFFFFFF;
 					DefaultStyle.checkBoxLineColor = "#FFFFFF";
 					scrollBarShapeAlpha2 = 0;
 					break;
-					
-					
 				case 19:
 					arrowFillColor = 0x000000;
 					scrollBarShapeColor1 = 0x000000;
 					break;
-				
-				
 				case 22:
 					arrowFillColor = 0x666666;
 					DefaultStyle.checkBoxLineColor = "#666666";
 					scrollBarShapeColor1 = 0x666666;
 					break;
-				
-				
 				case 23:
 					arrowFillColor = 0xFFFFFF
 					scrollBarShapeColor1 = 0xFFFFFF;
 					DefaultStyle.checkBoxLineColor = "#FFFFFF";
 					scrollBarShapeAlpha2 = 0;
 					break;
-					
-					
 				case 26:
 					arrowFillColor = 0xFFFFFF
 					scrollBarShapeColor1 = 0xFFFFFF;
 					DefaultStyle.checkBoxLineColor = "#FFFFFF";
 					scrollBarShapeAlpha2 = 0;
 					break;
-					
-					
 				case 28:
 					arrowFillColor = 0xFFFFFF
 					scrollBarShapeColor1 = 0xFFFFFF;
 					DefaultStyle.checkBoxLineColor = "#FFFFFF";
 					scrollBarShapeAlpha2 = 0;
 					break;
-					
-					
 				case 30:
 					arrowFillColor = 0xFFFFFF
 					scrollBarShapeColor1 = 0xFFFFFF;
 					DefaultStyle.checkBoxLineColor = "#FFFFFF";
 					scrollBarShapeAlpha2 = 0;
 					break;
-					
-					
 				case 31:
 					arrowFillColor = 0xFFFFFF
 					scrollBarShapeColor1 = 0xFFFFFF;
 					DefaultStyle.checkBoxLineColor = "#FFFFFF";
 					scrollBarShapeAlpha2 = 0;
 					break;
-					
-					
 				case 32:
 					arrowFillColor = 0x003466;
 					scrollBarShapeColor1 = 0x003466;
 					DefaultStyle.checkBoxLineColor = "#003466";
 					break;
-					
-					
 				case 33:
 					arrowFillColor = 0xFFFFFF
 					scrollBarShapeColor1 = 0xFFFFFF;
 					DefaultStyle.checkBoxLineColor = "#FFFFFF";
 					scrollBarShapeAlpha2 = 0;
 					break;
-				
-				
 				case 34:
 					arrowFillColor = 0x576626
 					scrollBarShapeColor1 = 0x576626;
 					DefaultStyle.checkBoxLineColor = "#576626";
 					scrollBarShapeAlpha2 = 0;
 					break;
-				
-				
 				case 35:
 					arrowFillColor = 0x000000;
 					scrollBarShapeColor1 = 0x000000;
 					break;
-				
-				
-				
 				case 36:
 					arrowFillColor = 0xFFFFFF
 					scrollBarShapeColor1 = 0xFFFFFF;
 					DefaultStyle.checkBoxLineColor = "#FFFFFF";
 					scrollBarShapeAlpha2 = 0;
 					break;
-				
-				
-				
 				case 37:
 					arrowFillColor = 0x275701
 					scrollBarShapeColor1 = 0x275701;
 					DefaultStyle.checkBoxLineColor = "#275701";
 					scrollBarShapeAlpha2 = 0;
 					break;
-				
 				case 38:
 					arrowFillColor = 0xFFFFFF
 					scrollBarShapeColor1 = 0xFFFFFF;
 					DefaultStyle.checkBoxLineColor = "#FFFFFF";
 					scrollBarShapeAlpha2 = 0;
 					break;
-				
-				
 				case 39:
 					arrowFillColor = 0x000000;
 					scrollBarShapeColor1 = 0x000000;
 					DefaultStyle.checkBoxLineColor = "#000000";
 					break;
-				
-				
 				case 40:
 					arrowFillColor = 0x5f5540
 					scrollBarShapeColor1 = 0x5f5540;
 					DefaultStyle.checkBoxLineColor = "#5f5540";
 					scrollBarShapeAlpha2 = 0;
 					break;
-				
 				case 41:
 					arrowFillColor = 0xFFFFFF
 					scrollBarShapeColor1 = 0xFFFFFF;
 					DefaultStyle.checkBoxLineColor = "#FFFFFF";
 					scrollBarShapeAlpha2 = 0;
 					break;
-				
-				
 				case 46:
 					arrowFillColor = 0x000000;
 					scrollBarShapeColor1 = 0x000000;
 					DefaultStyle.checkBoxLineColor = "#000000";
 					break;
-				
-				
 				case 49:
 					arrowFillColor = 0xFFFFFF
 					scrollBarShapeColor1 = 0xFFFFFF;
 					DefaultStyle.checkBoxLineColor = "#FFFFFF";
 					scrollBarShapeAlpha2 = 0;
 					break;
-				
-				
 				case 51:
 					DefaultStyle.checkBoxLineColor = "#FFFFFF";
 					scrollBarShapeAlpha2 = 0;
 					break;
-				
-				
 				case 52:
 					arrowFillColor = 0xFFFFFF
 					scrollBarShapeColor1 = 0xFFFFFF;
 					DefaultStyle.checkBoxLineColor = "#FFFFFF";
 					scrollBarShapeAlpha2 = 0;
 					break;
-				
-				
 				case 53:
 					arrowFillColor = 0x000000;
 					scrollBarShapeColor1 = 0x000000;
 					DefaultStyle.checkBoxLineColor = "#000000";
 					break;
-				
-				
 				case 54:
 					arrowFillColor = 0xFFFFFF
 					scrollBarShapeColor1 = 0xFFFFFF;
 					DefaultStyle.checkBoxLineColor = "#FFFFFF";
 					scrollBarShapeAlpha2 = 0;
 					break;
-				
-				
 				case 56:
 					arrowFillColor = 0x3e3973;
 					scrollBarShapeColor1 = 0x3e3973;
 					DefaultStyle.checkBoxLineColor = "#3e3973";
 					break;
-				
-				
 				case 57:
 					arrowFillColor = 0x005500;
 					scrollBarShapeColor1 = 0x005500;
 					DefaultStyle.checkBoxLineColor = "#005500";
 					break;
-				
-				
 				case 58:
 					arrowFillColor = 0x000000;
 					scrollBarShapeColor1 = 0x000000;
 					DefaultStyle.checkBoxLineColor = "#000000";
 					break;
-				
-				
 				case 59:
 					arrowFillColor = 0xFFFFFF
 					scrollBarShapeColor1 = 0xFFFFFF;
 					DefaultStyle.checkBoxLineColor = "#FFFFFF";
 					scrollBarShapeAlpha2 = 0;
 					break;
-				
-				
 				case 63:
 					arrowFillColor = 0xFFFFFF
 					scrollBarShapeColor1 = 0xFFFFFF;
 					DefaultStyle.checkBoxLineColor = "#FFFFFF";
 					scrollBarShapeAlpha2 = 0;
 					break;
-				
-				
 				case 64:
 					arrowFillColor = 0xFFFFFF
 					scrollBarShapeColor1 = 0xFFFFFF;
 					DefaultStyle.checkBoxLineColor = "#FFFFFF";
 					scrollBarShapeAlpha2 = 0;
 					break;
-				
-				
 				case 65:
 					arrowFillColor = 0xFFFFFF
 					scrollBarShapeColor1 = 0xFFFFFF;
 					DefaultStyle.checkBoxLineColor = "#FFFFFF";
 					scrollBarShapeAlpha2 = 0;
 					break;
-				
-				
 				case 66:
 					arrowFillColor = 0x573b10
 					scrollBarShapeColor1 = 0x573b10;
 					DefaultStyle.checkBoxLineColor = "#573b10";
 					scrollBarShapeAlpha2 = 0;
 					break;
-				
-				
 				case 67:
 					arrowFillColor = 0xFFFFFF
 					scrollBarShapeColor1 = 0xFFFFFF;
 					DefaultStyle.checkBoxLineColor = "#FFFFFF";
 					scrollBarShapeAlpha2 = 0;
 					break;
-				
-				
 				case 68:
 					arrowFillColor = 0x000000;
 					scrollBarShapeColor1 = 0x000000;
 					DefaultStyle.checkBoxLineColor = "#000000";
 					break;
-				
-				
 				case 70:
 					arrowFillColor = 0x000000;
 					scrollBarShapeColor1 = 0x000000;
 					DefaultStyle.checkBoxLineColor = "#000000";
 					break;
-					
 				default:
 					break;
 			}

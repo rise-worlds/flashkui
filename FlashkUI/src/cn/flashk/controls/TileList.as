@@ -5,6 +5,7 @@ package cn.flashk.controls
 	import cn.flashk.controls.managers.SkinManager;
 	import cn.flashk.controls.managers.SourceSkinLinkDefine;
 	import cn.flashk.controls.managers.StyleManager;
+	import cn.flashk.controls.modeStyles.ScrollBarSkinSet;
 	import cn.flashk.controls.skin.ActionDrawSkin;
 	import cn.flashk.controls.skin.ListSkin;
 	import cn.flashk.controls.skin.sourceSkin.ListSourceSkin;
@@ -32,9 +33,9 @@ package cn.flashk.controls
 		private var _verticalSpace:Number = 3;
 		private var _horizontalSpace:Number = 7;
 		
-		public function TileList()
+		public function TileList(skinSet:ScrollBarSkinSet=null)
 		{
-			super();
+			super(skinSet);
 			
 			_compoWidth = 600;
 			_compoHeight = 300;

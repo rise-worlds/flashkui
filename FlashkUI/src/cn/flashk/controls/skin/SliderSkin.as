@@ -16,13 +16,13 @@ package cn.flashk.controls.skin
 	{
 		public var sliderNum:uint;
 		
-		private var shape:Sprite;
-		private var styleSet:Object;
-		private var tar:Slider;
-		private var mot:MotionSkinControl;
-		private var mot2:MotionSkinControl;
-		private var sliders:Array = [];
-		private var space:Shape;
+		protected var shape:Sprite;
+		protected var styleSet:Object;
+		protected var tar:Slider;
+		protected var mot:MotionSkinControl;
+		protected var mot2:MotionSkinControl;
+		protected var sliders:Array = [];
+		protected var space:Shape;
 		
 		public function SliderSkin()
 		{	
@@ -94,6 +94,7 @@ package cn.flashk.controls.skin
 			if(tar.thumbCount == 2){
 				drawSliver(Sprite(sliders[1]));
 			}
+			space.visible = Slider(tar).showDragSpace;
 		}
 		
 		public function drawSliver(sp:Sprite):void{

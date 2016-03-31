@@ -31,8 +31,17 @@ package cn.flashk.controls
 		protected var _group:RadioButtonGroup;
 		protected var _value:Object;
 		
-		public function RadioButton() 
+		public function RadioButton(skinLinkage:String="",asSkinClass:Class=null) 
 		{
+			_skinLinkage = skinLinkage;
+			if(skinLinkage == ""){
+				_skinLinkage = SourceSkinLinkDefine.RADIO_BUTTON;
+			}
+			_asSkinClass = asSkinClass;
+			if(asSkinClass == null){
+				_asSkinClass = RadioButtonSkin;
+			}
+			_isInitSkin = true; 
 			super();
 			
 			label = "单选";
@@ -48,11 +57,11 @@ package cn.flashk.controls
 		}
 		
 		override public function setDefaultSkin():void {
-			setSkin(RadioButtonSkin);
+			setSkin(_asSkinClass);
 		}
 		
 		override public function setSourceSkin():void {
-			setSkin(SkinLoader.getClassFromSkinFile(SourceSkinLinkDefine.RADIO_BUTTON));
+			setSkin(SkinLoader.getClassFromSkinFile(_skinLinkage));
 		}
 		
 		override public function setSkin(Skin:Class):void {

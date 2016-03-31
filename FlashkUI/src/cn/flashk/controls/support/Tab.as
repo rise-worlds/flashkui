@@ -27,13 +27,13 @@ package cn.flashk.controls.support
 		public var btn:Button;
 		private var sh:Shape;
 		
-		public function Tab() 
+		public function Tab(skinLinkage:String="",asSkinClass:Class=null) 
 		{
 			super();
-			btn = new Button();
+			btn = new Button(skinLinkage,asSkinClass);
 			btn.setStyle( ButtonStyle.DEFAULT_SKIN_ELLIPSE_BOTTOM_WIDTH , 0);
 			btn.setStyle( ButtonStyle.DEFAULT_SKIN_ELLIPSE_BOTTOM_HEIGHT , 0);
-			if(SkinManager.isUseDefaultSkin == false){
+			if(SkinManager.isUseDefaultSkin == false && skinLinkage==""){
 				btn.setSkin(SkinLoader.getClassFromSkinFile(SourceSkinLinkDefine.TAB_BUTTON));
 			}
 			btn.addEventListener(MouseEvent.CLICK,showPress);

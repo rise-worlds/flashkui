@@ -27,8 +27,17 @@ package cn.flashk.controls
 	public class CheckBox extends ToggleButton
 	{
 	
-		public function CheckBox() 
+		public function CheckBox(skinLinkage:String="",asSkinClass:Class=null) 
 		{
+			_skinLinkage = skinLinkage;
+			if(skinLinkage == ""){
+				_skinLinkage = SourceSkinLinkDefine.CHECK_BOX;
+			}
+			_asSkinClass = asSkinClass;
+			if(asSkinClass == null){
+				_asSkinClass = CheckBoxSkin;
+			}
+			_isInitSkin = true;
 			super();
 			label = "多选";
 			styleSet[ ButtonStyle.TEXT_COLOR ] = DefaultStyle.checkBoxTextColor;
@@ -41,12 +50,12 @@ package cn.flashk.controls
 		
 		override public function setDefaultSkin():void 
 		{
-			setSkin(CheckBoxSkin);
+			setSkin(_asSkinClass);
 		}
 		
 		override public function setSourceSkin():void 
 		{
-			setSkin(SkinLoader.getClassFromSkinFile(SourceSkinLinkDefine.CHECK_BOX));
+			setSkin(SkinLoader.getClassFromSkinFile(_skinLinkage));
 		}
 		
 		override public function setSkin(Skin:Class):void 

@@ -12,6 +12,7 @@ package cn.flashk.controls
 	import cn.flashk.controls.skin.sourceSkin.PanelSourceSkin;
 	import cn.flashk.controls.support.BitmapDataText;
 	import cn.flashk.controls.support.UserMouse;
+	import cn.flashk.ui.UI;
 	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
@@ -36,6 +37,9 @@ package cn.flashk.controls
 	{
 		public static var titleButtonAlign:String = "right";
 		public static var isResizePress:Boolean = false;
+		
+		public static var dragMax:int = 50;
+		public static var dragMaxheight:int = 37;
 		
 		/**
 		 * 窗口拖动时拖动窗口的透明度值
@@ -97,6 +101,9 @@ package cn.flashk.controls
 		protected var tmpBox:Sprite = new Sprite();
 		protected var _useDragCatch:Boolean;
 		protected var _bpSp:Sprite = new Sprite();
+		protected var _lastW:int;
+		protected var _lastH:int;
+		protected var _isResizeResetXY:Boolean = true;
 		
 		public function Window()
 		{
@@ -107,6 +114,65 @@ package cn.flashk.controls
 			draggingTotalAlpha = StyleManager.globalWindowDragTotalAlpha;
 			buttonOverFilter= DefaultStyle.windowButtonOverFilter;
 			_useDragCatch = StyleManager.globalWindowuseDragCatch;
+			this.addEventListener(Event.ADDED_TO_STAGE,onAddStageInitButton);
+			this.addEventListener(Event.ADDED_TO_STAGE,onAddToStage);
+			this.addEventListener(Event.REMOVED_FROM_STAGE,onRemoveFromStage);
+			
+			super();
+		
+			dragBtn = new SimpleButton();
+			this.addChild(dragBtn);
+			var dragArae:Shape = new Shape();
+			dragArae.graphics.beginFill(0,0.5);
+			dragArae.graphics.drawRect(styleSet[ButtonStyle.DEFAULT_SKIN_ELLIPSE_WIDTH] ,0,_compoWidth-styleSet[ButtonStyle.DEFAULT_SKIN_ELLIPSE_WIDTH] -10,tiHeight);
+			dragBtn.hitTestState = dragArae;
+			dragBtn.useHandCursor = false;
+			this.addEventListener(MouseEvent.MOUSE_DOWN,moveWindowTop);
+			dragBtn.addEventListener(MouseEvent.MOUSE_DOWN,startDragWindow);
+			bp = new Bitmap();
+            _ableUserResizeWindow = StyleManager.globalAbleUserResizeWindow;
+            autoClipContent = StyleManager.globalWindowAutoClip;
+            //自动构建
+            if(this.getChildByName("set_windowSize")!= null){
+                setSize(this.getChildByName("set_windowSize").width,this.getChildByName("set_windowSize").height);
+                this.removeChild(this.getChildByName("set_windowSize"));
+            }
+            if(this.getChildByName("content_sp") != null){
+                content = this.getChildByName("content_sp") ;
+            }
+		}
+		
+		/**
+		 * 使用一个自定义Shape作为窗口的拖动区域
+		 * @param areaShape
+		 * 
+		 */
+		public function useOwnDragArea(areaShape:Shape):void
+		{
+			dragBtn.hitTestState = areaShape;
+			dragBtn.x = dragBtn.y = 0;
+			dragBtn.scaleX = dragBtn.scaleY = 1;
+		}
+		
+		public function get dragAreaInteractiveObject ():SimpleButton
+		{
+			
+			return dragBtn;
+		}
+		
+		/**
+		 * 获取拖动区域设置的 Shape，可以操作此Shape的graphics属性自定义非矩形拖动区域。参见Graphics对象的操作方法画出矢量图形
+		 * @return 
+		 * 
+		 */
+		public function get dragArea():Shape
+		{
+			return dragBtn.hitTestState as Shape;
+		}
+		
+		protected function onAddStageInitButton(event:Event):void
+		{
+			if(_isUseOwnSkin == true) return;
 			closeBtn = new Button();
 			if(SkinManager.isUseDefaultSkin == true)
 			{
@@ -222,36 +288,13 @@ package cn.flashk.controls
 			resizeTR.addEventListener(MouseEvent.MOUSE_OUT,hideResizeMouse);
 			resizeTR.addEventListener(MouseEvent.MOUSE_DOWN,startResizeTR);
 			this.addChild(resizeTR);
-	
-			super();
-		
-			dragBtn = new SimpleButton();
-			this.addChild(dragBtn);
-			var dragArae:Shape = new Shape();
-			dragArae.graphics.beginFill(0,0.5);
-			dragArae.graphics.drawRect(styleSet[ButtonStyle.DEFAULT_SKIN_ELLIPSE_WIDTH] ,0,_compoWidth-styleSet[ButtonStyle.DEFAULT_SKIN_ELLIPSE_WIDTH] -10,tiHeight);
-			dragBtn.hitTestState = dragArae;
-			dragBtn.useHandCursor = false;
-			this.addEventListener(MouseEvent.MOUSE_DOWN,moveWindowTop);
-			dragBtn.addEventListener(MouseEvent.MOUSE_DOWN,startDragWindow);
-			bp = new Bitmap();
-            _ableUserResizeWindow = StyleManager.globalAbleUserResizeWindow;
-            ableUserResizeWindow = _ableUserResizeWindow;
+			
+			ableUserResizeWindow = _ableUserResizeWindow;
 			showMiniButton = StyleManager.globalShowWindowMiniButton;
-            setAllIndex();
-            autoClipContent = StyleManager.globalWindowAutoClip;
-            //自动构建
-            if(this.getChildByName("set_windowSize")!= null)
-            {
-                setSize(this.getChildByName("set_windowSize").width,this.getChildByName("set_windowSize").height);
-                this.removeChild(this.getChildByName("set_windowSize"));
-            }
-            if(this.getChildByName("content_sp") != null)
-            {
-                content = this.getChildByName("content_sp") ;
-            }
+			setAllIndex();
+			setSize(_compoWidth,_compoHeight);
 		}
-        
+		
 		public function get useDragCatch():Boolean
 		{
 			return _useDragCatch;
@@ -262,14 +305,7 @@ package cn.flashk.controls
 			_useDragCatch = value;
 		}
 
-		/**
-		 *  使用自定义皮肤，默认窗口拖动时会使用位图缓存，如果皮肤拖动时被裁剪，请将useDragCatch设定为false
-		 * 
-		 * @param closeButton 对关闭按钮的引用，点击此按钮将关闭窗口
-		 * @param closeButtonWidth 
-		 * 
-		 */
-		/** 使用自定义皮肤，默认窗口拖动时会使用位图缓存，如果皮肤拖动时被裁剪，请将useDragCatch设定为false
+		/** 使用自定义皮肤，默认窗口拖动时会使用位图缓存，如果皮肤拖动时被裁剪，请将useDragCatch设定为false。在sp.addChild(window)之前调用此方法可以提高Window自定义皮肤初始化的性能
 		 * 
 		 * @param closeButton 对关闭按钮的引用，点击此按钮将关闭窗口，使用之后关闭将被从原来显示列表移除到窗口的子级（最上层）
 		 * @param dragWidthLess 要修改的拖动范围的值，默认是窗口宽度，如果是负值，则为窗口宽度减去多少
@@ -294,9 +330,6 @@ package cn.flashk.controls
 				closeButton.addEventListener(MouseEvent.CLICK,close);
 				this.addChild(closeButton);
 			}
-            closeBtn.visible = false;
-            miniBtn.visible = false;
-            maxBtn.visible = false;
             this.graphics.clear();
             filterBG.graphics.clear();
             filterBG.visible = false;
@@ -683,7 +716,6 @@ package cn.flashk.controls
 				mx = minWidth;
 			}
 			this.setSize(mx,my);
-			
 			if(my == minHeight){
 				this.y = pressData[4];
 			}else{
@@ -759,6 +791,8 @@ package cn.flashk.controls
 		
 		override public function setSize(newWidth:Number, newHeight:Number):void {
 			super.setSize(newWidth, newHeight);
+			if(_isUseOwnSkin == true) return;
+			if(closeBtn == null) return;
 			closeBtn.x = _compoWidth-closeBtn.compoWidth-StyleManager.globalWindowButtonsXLess;
 			if(closeBtn.visible == true){
 				maxBtn.x = closeBtn.x - maxBtn.compoWidth+2;
@@ -825,13 +859,21 @@ package cn.flashk.controls
 				bp.bitmapData = bd;
 				bp.x= this.x-addX;
 				bp.y = this.y-addY;
-				bp.alpha = 0;
+				bp.alpha = 1;
 				_bpSp.addChild(bp);
 				this.parent.addChild(_bpSp);
+				if(this.alpha != draggingTotalAlpha-draggingAlpha){
+					var faAl:Number = draggingTotalAlpha-draggingAlpha;
+					if(faAl <=0 ) faAl = 0;
+					this.alpha = faAl;
+					if(this.alpha == 0) this.visible = false;
+				}
 			}else
 			{
 				moveFollowDis = this;
 			}
+			this.removeEventListener(Event.ENTER_FRAME,alphaMoreMe);
+			this.addEventListener(Event.ENTER_FRAME,alphaLessMe);
 			pressX = this.mouseX;
 			pressY = this.mouseY;
 			this.stage.addEventListener(MouseEvent.MOUSE_MOVE,moveDragView);
@@ -840,20 +882,54 @@ package cn.flashk.controls
 		
 		protected function stopDragWindow(event:MouseEvent):void
 		{
-			this.x = bp.x+addX;
-			this.y = bp.y+addY;
-			this.alpha = 1;
+			if(moveFollowDis == null){
+				this.x = bp.x+addX;
+				this.y = bp.y+addY;
+			}
 			this.visible = true;
 			this.stage.removeEventListener(MouseEvent.MOUSE_MOVE,moveDragView);
 			this.stage.removeEventListener(MouseEvent.MOUSE_UP,stopDragWindow);
-			if(bd)
-			{
-				bd.dispose();
-				bd = null;
+			this.removeEventListener(Event.ENTER_FRAME,alphaLessMe);
+			this.addEventListener(Event.ENTER_FRAME,alphaMoreMe);
+		}
+		
+		protected function alphaLessMe(event:Event):void
+		{
+			var tar:DisplayObject;
+			if(_useDragCatch == true){
+				tar = bp;
+			}else{
+				tar = this;
 			}
-			if(bp && bp.parent)
-			{
-				bp.parent.removeChild(bp);
+			tar.alpha -= 0.075;
+			if(tar.alpha < draggingAlpha){
+				tar.alpha = draggingAlpha;
+				this.removeEventListener(Event.ENTER_FRAME,alphaLessMe);
+			}
+		}
+		
+		protected function alphaMoreMe(event:Event):void
+		{
+			var tar:DisplayObject;
+			if(_useDragCatch == true){
+				tar = bp;
+			}else{
+				tar = this;
+			}
+			tar.alpha += 0.1;
+			if(tar.alpha > 1){
+				tar.alpha = 1;
+				this.alpha = 1;
+				this.removeEventListener(Event.ENTER_FRAME,alphaMoreMe);
+				if(bd)
+				{
+					bd.dispose();
+					bd = null;
+				}
+				if(bp && bp.parent)
+				{
+					bp.parent.removeChild(bp);
+				}
 			}
 		}
 		
@@ -861,28 +937,58 @@ package cn.flashk.controls
 		{
 			bp.x = this.parent.mouseX-pressX-addX;
 			bp.y = this.parent.mouseY - pressY-addY;
-			if(bp.x <-_compoWidth+0) bp.x = -_compoWidth+0;
-			if(bp.x > this.stage.stageWidth-55) bp.x = this.stage.stageWidth-55;
-			if(bp.y < -35) bp.y = -35;
-			if(bp.y > this.stage.stageHeight-55) bp.y = this.stage.stageHeight-55;
+			if(bp.x <-_compoWidth+40) bp.x = -_compoWidth+40;
+			if(bp.x > this.stage.stageWidth-90) bp.x = this.stage.stageWidth-90;
+			if(bp.y < -32) bp.y = -32;
+			if(bp.y > this.stage.stageHeight-60) bp.y = this.stage.stageHeight-60;
 			event.updateAfterEvent();
-			if(bp.alpha != draggingAlpha){
-				bp.alpha = draggingAlpha;
-			}
-			if(this.alpha != draggingTotalAlpha-draggingAlpha){
-				var faAl:Number = draggingTotalAlpha-draggingAlpha;
-				if(faAl <=0 ) faAl = 0;
-				this.alpha = faAl;
-				if(this.alpha == 0) this.visible = false;
-			}
 			bp.x = int(bp.x);
 			bp.y = int(bp.y);
 			if(moveFollowDis != null)
 			{
 				moveFollowDis.x = bp.x+addX;
 				moveFollowDis.y = bp.y+addY;
-				moveFollowDis.alpha = bp.alpha;
 				moveFollowDis.visible = true;
+			}
+		}
+		
+		
+		protected function onAddToStage(event:Event):void
+		{
+			UI.stage.addEventListener(Event.RESIZE,onStageResize);
+			checkOutside();
+		}
+		
+		protected function onRemoveFromStage(event:Event=null):void
+		{
+			UI.stage.removeEventListener(Event.RESIZE,onStageResize);
+		}
+		
+		protected function onStageResize(event:Event):void
+		{
+			if(_isResizeResetXY == false) return;
+			var midx:int = int(this.x+_compoWidth/2);
+			var midy:int = int(this.y + _compoHeight/2);
+			this.x = int(UI.stage.stageWidth/_lastW*midx-_compoWidth/2);
+			this.y = int(UI.stage.stageHeight/_lastH*midy-_compoHeight/2);
+			checkOutside();
+		}
+		
+		protected function checkOutside():void
+		{
+			_lastW = UI.stage.stageWidth;
+			_lastH = UI.stage.stageHeight;
+			if(this.x > UI.stage.stageWidth - dragMax) {
+				this.x = UI.stage.stageWidth - dragMax;
+			}
+			if(this.x < -_compoWidth + dragMax) {
+				this.x = -_compoWidth + dragMax;
+			}
+			if(this.y > UI.stage.stageHeight - dragMaxheight) {
+				this.y = UI.stage.stageHeight - dragMaxheight;
+			}
+			if(this.y < 0) {
+				this.y = 0;
 			}
 		}
 		

@@ -69,6 +69,7 @@ package cn.flashk.controls.support
 			if(mouseDisplayObject is Bitmap){
 				Bitmap(mouseDisplayObject).bitmapData = null;
 			}
+			mouseDisplayObjectContainer.stage.removeEventListener(MouseEvent.MOUSE_MOVE,updateMouseMove);
 		}
 		
 		protected static function updateMouseMove(event:MouseEvent):void

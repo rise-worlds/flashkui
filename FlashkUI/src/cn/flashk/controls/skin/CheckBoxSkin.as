@@ -21,10 +21,10 @@ package cn.flashk.controls.skin
 	public class CheckBoxSkin extends ToggleDrawSkin
 	{
 		
-		private var tar:CheckBox;
-		private var mot:MotionSkinControl;
-		private var shape:Shape;
-		private var styleSet:Object;
+		protected var tar:CheckBox;
+		protected var mot:MotionSkinControl;
+		protected var shape:Shape;
+		protected var styleSet:Object;
 		
 		public function CheckBoxSkin() 
 		{

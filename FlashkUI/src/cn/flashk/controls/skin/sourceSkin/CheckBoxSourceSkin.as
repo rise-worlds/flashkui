@@ -12,8 +12,8 @@ package cn.flashk.controls.skin.sourceSkin
 	public class CheckBoxSourceSkin extends SourceSkin
 	{
 		private static var bd:BitmapData;
-		private static var skin:DisplayObject;
-		private static var bds:Array;
+		private  var skin:DisplayObject;
+		private  var bds:Array;
 	
 		protected var tar:CheckBox;
 		

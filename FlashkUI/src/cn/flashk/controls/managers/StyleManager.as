@@ -8,8 +8,8 @@ package cn.flashk.controls.managers
 	 */
 	public class StyleManager 
 	{
-		public static var globalWindowDragAlpha:Number = 0.65;
-		public static var globalWindowDragTotalAlpha:Number = 1;
+		public static var globalWindowDragAlpha:Number = 0.5;
+		public static var globalWindowDragTotalAlpha:Number = 0.5;
         public static var globalAbleUserResizeWindow:Boolean = true;
         public static var globalWindowAutoClip:Boolean = true;
 		public static var globalShowWindowMiniButton:Boolean = true;
@@ -34,7 +34,7 @@ package cn.flashk.controls.managers
 		 * 滚动条的缓动值，1表示不使用缓动 
 		 */
 		public static var globalScrollBarSmoothNum:Number = 3.0;
-		public static var listScrollBarSmoothNum:Number = 2.0;
+		public static var listScrollBarSmoothNum:Number = 3.0;
 		public static var scrollBarOutAlpha:Number = 0.6;
 		/**
 		 * 默认Image是否开启平滑图像显示 

@@ -16,6 +16,7 @@ package cn.flashk.controls.support
 		private var _selecttion:RadioButton;
 		private var _name:String;
 		
+		
 		public function RadioButtonGroup(name:String) 
 		{
 			_name = name;
@@ -137,6 +138,15 @@ package cn.flashk.controls.support
 			}
 			this.dispatchEvent(new Event(Event.CHANGE));
 		}
-		
+		public function destroy():void
+		{
+			for (var i:int = 0; i < radios.length; i++) 
+			{
+				radios[i].removeEventListener(Event.CHANGE, setOneSelect);
+				radios.splice(i, 1);
+			}
+			radios = [];
+			_selecttion = null;
+		}
 	}
 }

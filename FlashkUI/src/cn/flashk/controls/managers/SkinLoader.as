@@ -20,11 +20,13 @@ package cn.flashk.controls.managers
 		
 		public static var isSelfFile:Boolean = false;
 		private static var ldr:Loader;
+		private static var loadOKFun:Function;
 		
 		public function SkinLoader()
 		{
 		}
-		public static function loadSkinFile(path:String,bytes:ByteArray=null,context:LoaderContext=null):void{
+		public static function loadSkinFile(path:String,loadCompleteCall:Function=null,bytes:ByteArray=null,context:LoaderContext=null):void{
+			loadOKFun = loadCompleteCall;
 			ldr = new Loader();
 			ldr.contentLoaderInfo.addEventListener(Event.COMPLETE,initSkinSet);
             if(bytes== null)
@@ -105,6 +107,9 @@ package cn.flashk.controls.managers
 			var xml:XML = obj.skinSet as XML;
 			setSkinStyle(xml);
 			eventDispatcher.dispatchEvent(new Event(SKIN_LOADED));
+			if(loadOKFun != null){
+				loadOKFun();
+			}
 			isSelfFile = false;
 		}
 		

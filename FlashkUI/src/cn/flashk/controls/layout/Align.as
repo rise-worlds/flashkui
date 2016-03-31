@@ -22,6 +22,52 @@ package cn.flashk.controls.layout
 		private static var _hasAdd:Boolean = false;
 		
 		/**
+		 * 竖向排列所有子级 
+		 * @param target
+		 * @return 
+		 * 
+		 */
+		public static function followVerticalOneByOne(target:Sprite):int
+		{
+			var len:int = target.numChildren;
+			var fy:int=0;
+			var dis:DisplayObject;
+			for(var i:int=0;i<len;i++){
+				dis = target.getChildAt(i);
+				dis.y = fy;
+				fy += Math.round(dis.height);
+			}
+			return fy;
+		}
+		
+		/**
+		 * 将所有子级按网格排列（可设置 widthCount为无限大：单行横向排列，为0，单列竖向排列）
+		 * @param target 父级容器
+		 * @param gridWidth 网格的横向间距
+		 * @param gridHeight  网格的竖向间距
+		 * @param widthCount
+		 * 
+		 */
+		public static function gridAllChild(target:Sprite,gridWidth:Number,gridHeight:Number,widthCount:uint):void
+		{
+			var indexX:int=0;
+			var indexY:int=0;
+			var dis:DisplayObject
+			for(var i:int=0;i<target.numChildren;i++)
+			{
+				dis = target.getChildAt(i);
+				dis.x = indexX*gridWidth;
+				dis.y = indexY*gridHeight;
+				indexX++;
+				if(indexX >= widthCount)
+				{
+					indexX = 0;
+					indexY++;
+				}
+			}
+		}
+		
+		/**
 		 * 居中对齐 
 		 * @param target
 		 * @param isAlways
@@ -260,33 +306,6 @@ package cn.flashk.controls.layout
 			{
 				if(target.x < 0) target.x = 0;
 				if(target.y < 0) target.y = 0;
-			}
-		}
-		
-		/**
-		 * 将所有子级按网格排列（可设置 widthCount为无限大：单行横向排列，为0，单列竖向排列）
-		 * @param target 父级容器
-		 * @param gridWidth 网格的横向间距
-		 * @param gridHeight  网格的竖向间距
-		 * @param widthCount
-		 * 
-		 */
-		public static function gridAllChild(target:Sprite,gridWidth:Number,gridHeight:Number,widthCount:uint):void
-		{
-			var indexX:int=0;
-			var indexY:int=0;
-			var dis:DisplayObject
-			for(var i:int=0;i<target.numChildren;i++)
-			{
-				dis = target.getChildAt(i);
-				dis.x = indexX*gridWidth;
-				dis.y = indexY*gridHeight;
-				indexX++;
-				if(indexX >= widthCount)
-				{
-					indexX = 0;
-					indexY++;
-				}
 			}
 		}
 		

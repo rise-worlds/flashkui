@@ -1,18 +1,20 @@
 package cn.flashk.controls.support 
 {
+	import cn.flashk.controls.ToolTip;
+	import cn.flashk.controls.events.UIComponentEvent;
+	import cn.flashk.controls.managers.ComponentsManager;
+	import cn.flashk.controls.managers.SkinManager;
+	import cn.flashk.controls.managers.SkinThemeColor;
+	import cn.flashk.controls.managers.UISet;
+	import cn.flashk.controls.skin.sourceSkin.SourceSkin;
+	import cn.flashk.ui.UI;
+	
 	import flash.display.Sprite;
 	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.filters.ColorMatrixFilter;
 	import flash.ui.Keyboard;
-	
-	import cn.flashk.controls.ToolTip;
-	import cn.flashk.controls.events.UIComponentEvent;
-	import cn.flashk.controls.managers.ComponentsManager;
-	import cn.flashk.controls.managers.SkinManager;
-	import cn.flashk.controls.managers.UISet;
-	import cn.flashk.controls.skin.sourceSkin.SourceSkin;
 	
 	/**
 	 * 当组件的大小改变时调度
@@ -103,8 +105,7 @@ package cn.flashk.controls.support
 		protected var _enabled:Boolean;
 		protected var _filtersBak:Array;
 		protected var _isSizeInit:Boolean=false;
-		protected var _mouseBakE:Boolean;
-		protected var _mouseBakC:Boolean;
+		protected var _mouseBaks:Array = [];
 		/**
 		 * 销毁此组件，建议需要清除组件的引用和内存时调用此方法，调用之后，将不能再执行组件方法。销毁过程中将按顺序进行以下操作：将自己从显示列表移除，清除组件使用的位图缓存，清除组件内部使用的其他内存。调用clearAllEventListener清除所有的监听
 		 */ 
@@ -147,22 +148,17 @@ package cn.flashk.controls.support
 			_enabled = value;
 			if (_enabled == false) {
 				_filtersBak = this.filters;
-				_mouseBakC = this.mouseChildren;
-				_mouseBakE = this.mouseEnabled;
+				_mouseBaks = [this.mouseChildren, this.mouseEnabled];
 				this.mouseChildren = false;
 				this.mouseEnabled = false;
-				var mat:ColorMatrix = new ColorMatrix ();
-				mat.adjustHue (UISet.disableHSB[0]);
-				mat.adjustSaturation (UISet.disableHSB[1]);
-				mat.adjustBrightness (UISet.disableHSB[2]);
-				mat.adjustContrast (UISet.disableHSB[3]);
-				var cf:ColorMatrixFilter = new ColorMatrixFilter (mat);
-				this.filters = [cf];
+				this.filters = UI.disableFilter;
 				this.alpha = 0.5;
 			}else {
 				this.filters = _filtersBak;
-				this.mouseChildren = _mouseBakC;
-				this.mouseEnabled = _mouseBakE;
+				if(_mouseBaks.length > 1){
+					this.mouseChildren = _mouseBaks[0];
+					this.mouseEnabled = _mouseBaks[1];
+				}
 				this.alpha = 1.0;
 			}
 		}
@@ -241,7 +237,8 @@ package cn.flashk.controls.support
 				isUseSourceSkin = true;
 				setSourceSkin();
 			}
-			if(stage == null){
+			if(UIComponent.stage == null){
+				SkinThemeColor.userDefaultColor(32);
 				this.addEventListener(Event.ADDED_TO_STAGE,addToStageInit);
 			}
 		}

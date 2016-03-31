@@ -2,6 +2,7 @@ package cn.flashk.controls
 {
 	import cn.flashk.controls.interfaces.IListItemRender;
 	import cn.flashk.controls.managers.StyleManager;
+	import cn.flashk.controls.modeStyles.ScrollBarSkinSet;
 	import cn.flashk.controls.support.BaseTreeItemRender;
 	import cn.flashk.controls.support.SWFDefinition;
 	import cn.flashk.controls.support.TreeItemRender;
@@ -77,9 +78,9 @@ package cn.flashk.controls
 			_rendersCatch = null;
 		}
 		
-		public function Tree()
+		public function Tree(skinSet:ScrollBarSkinSet=null)
 		{
-			super();
+			super(skinSet);
 			
 			_dict = new Dictionary();
 			_compoWidth = 300;
@@ -580,6 +581,7 @@ package cn.flashk.controls
 				_isNeedAlign = true;
 				return;
 			}
+			UIComponent.stage.removeEventListener(Event.RENDER,alignItemOneFrame);
 			alignItems(items);
 		}
 		

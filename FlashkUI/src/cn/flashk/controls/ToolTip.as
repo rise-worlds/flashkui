@@ -121,7 +121,7 @@ package cn.flashk.controls
 		/**
 		 * 提示文本的顶部边距（全局设置，影响所有ToolTip实例）
 		 */ 
-		public static var paddingTop:Number = 0;
+		public static var paddingTop:Number = 2;
 		/**
 		 * 提示文本的左边距（全局样设置，影响所有ToolTip实例）
 		 */ 
@@ -137,7 +137,7 @@ package cn.flashk.controls
 		/**
 		 * 提示文本背景的滤镜，默认是一个阴影滤镜（全局设置，影响所有ToolTip实例）
 		 */ 
-		public static var backgroundFilter:Array = [new DropShadowFilter(2,45,0,1,4,4,0.3,1)];
+		public static var backgroundFilter:Array = [new DropShadowFilter(2,45,0,1,4,4,0.2,1)];
 		
 		private static var tips:Array = new Array();
 		private static var timer:Timer = new Timer(1500);
@@ -184,7 +184,9 @@ package cn.flashk.controls
 			}
 			styleSet["textFormat"] = textFormat;
 			_compoWidth = 69;
-			_compoHeight = 22;
+			_compoHeight = 25;
+			
+			setSize(_compoWidth,_compoHeight);
 		}
 		
 		public function alphaInInit():void{

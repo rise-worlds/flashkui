@@ -3,8 +3,9 @@ package cn.flashk.controls.skin.sourceSkin
 	import cn.flashk.controls.VScrollBar;
 	import cn.flashk.controls.managers.SkinLoader;
 	import cn.flashk.controls.managers.SourceSkinLinkDefine;
-	import cn.flashk.controls.support.UIComponent;
+	import cn.flashk.controls.modeStyles.ScrollBarSkinSet;
 	import cn.flashk.controls.support.Scale9GridBitmap;
+	import cn.flashk.controls.support.UIComponent;
 	
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
@@ -18,22 +19,29 @@ package cn.flashk.controls.skin.sourceSkin
 	
 	public class VScrollBarSourceSkin extends SourceSkin
 	{
-		private static var bd:BitmapData;
-		private static var skin:DisplayObject;
-		private static var skinT:DisplayObject;
-		private static var skinB:DisplayObject;
-		private static var skinBG:DisplayObject;
-		private static var skinMid:DisplayObject;
-		private static var bds:Array;
-		private static var bdsT:Array;
-		private static var bdsB:Array;
-		private static var bdsBG:Array;
-		private static var bdsMid:Array;
+		private  var bd:BitmapData;
+		private  var skin:DisplayObject;
+		private  var skinT:DisplayObject;
+		private  var skinB:DisplayObject;
+		private  var skinBG:DisplayObject;
+		private  var skinMid:DisplayObject;
+		private  var bds:Array;
+		private  var bdsT:Array;
+		private  var bdsB:Array;
+		private  var bdsBG:Array;
+		private  var bdsMid:Array;
 		
 		public var arrowUp:Sprite;
 		public var arrowDown:Sprite;
 		public var bar:Sprite;
 		public var scroller:Sprite;
+		
+		protected var barLink:String;
+		protected var middle:String;
+		protected var topArrow:String;
+		protected var bottomArrow:String;
+		protected var background:String;
+		protected var backgroundMask:String;
 		
 		protected var tar:VScrollBar;
 		protected var bpT:Scale9GridBitmap;
@@ -46,10 +54,27 @@ package cn.flashk.controls.skin.sourceSkin
 		protected var bdMask:BitmapData;
 		protected var needChange:Boolean = false;
 		protected var count:uint=0
+		protected var _skinSet:ScrollBarSkinSet;
 		
-		public function VScrollBarSourceSkin()
+		public function VScrollBarSourceSkin(skinSet:ScrollBarSkinSet)
 		{
 			super();
+			_skinSet = skinSet;
+			if(skinSet != null){
+				barLink = _skinSet.bar;
+				middle = _skinSet.middle;
+				topArrow = _skinSet.topArrow;
+				bottomArrow = _skinSet.bottomArrow;
+				background = _skinSet.background;
+				backgroundMask = _skinSet.backgroundMask;
+			}else{
+				barLink = SourceSkinLinkDefine.SCROLL_BAR;
+				middle = SourceSkinLinkDefine.SCROLL_BAR_MIDDLE;
+				topArrow = SourceSkinLinkDefine.SCROLL_BAR_TOP_ARR;
+				bottomArrow = SourceSkinLinkDefine.SCROLL_BAR_BOTTOM_ARR;
+				background = SourceSkinLinkDefine.SCROLL_BAR_BACKGROUND;
+				backgroundMask = SourceSkinLinkDefine.SCROLL_BAR_BACKGROUND_MASK;
+			}
 			bpT = new Scale9GridBitmap();
 			bpB = new Scale9GridBitmap();
 			bpBG = new Scale9GridBitmap();
@@ -91,7 +116,7 @@ package cn.flashk.controls.skin.sourceSkin
 			initBottom();
 			initBG();
 			initMid();
-			var maskClass:Class = SkinLoader.getClassFromSkinFile(SourceSkinLinkDefine.SCROLL_BAR_BACKGROUND_MASK);
+			var maskClass:Class = SkinLoader.getClassFromSkinFile(backgroundMask);
 			if(maskClass != null){
 				shMask = new Shape();
 				var ma:DisplayObject = new maskClass() as DisplayObject;
@@ -101,8 +126,7 @@ package cn.flashk.controls.skin.sourceSkin
 				shMask.graphics.drawRect(0,0,tar.compoWidth,tar.compoHeight);
 				tar.addChild(shMask);
 				bpMask = new Shape();
-				bpMask.cacheAsBitmap = true;
-				bpMask.cacheAsBitmap = true;
+				bpMask.cacheAsBitmap = false;
 				shMask.mask = bpMask;
 				tar.addChild(bpMask);
 				scroller.addEventListener(Event.ENTER_FRAME,checkYChange);
@@ -110,11 +134,17 @@ package cn.flashk.controls.skin.sourceSkin
 			}
 		}
 		
+		protected function updateToPos(event:MouseEvent):void
+		{
+			checkYChange();
+		}
+		
 		private function showLater():void{
 			lastY = -70;
 		}
 		
-		private function checkYChange(event:Event):void{
+		public function checkYChange(event:Event=null):void{
+			if(bpMask == null) return;
 			if(scroller.y != lastY || count<200){
 				bpMask.y = scroller.y;
 				bpMask.graphics.clear();
@@ -127,7 +157,7 @@ package cn.flashk.controls.skin.sourceSkin
 		}
 		
 		private function initBG():void{
-			var Skin:Class = SkinLoader.getClassFromSkinFile(SourceSkinLinkDefine.SCROLL_BAR_BACKGROUND);
+			var Skin:Class = SkinLoader.getClassFromSkinFile(background);
 			if(skinBG == null){
 				skinBG = new Skin() as DisplayObject;
 			}
@@ -143,7 +173,7 @@ package cn.flashk.controls.skin.sourceSkin
 		}
 		
 		private function initMid():void{
-			var Skin:Class = SkinLoader.getClassFromSkinFile(SourceSkinLinkDefine.SCROLL_BAR_MIDDLE);
+			var Skin:Class = SkinLoader.getClassFromSkinFile(middle);
 			if(skinMid == null){
 				skinMid = new Skin() as DisplayObject;
 			}
@@ -155,7 +185,7 @@ package cn.flashk.controls.skin.sourceSkin
 		}
 		
 		private function initTop():void{
-			var Skin:Class = SkinLoader.getClassFromSkinFile(SourceSkinLinkDefine.SCROLL_BAR_TOP_ARR);
+			var Skin:Class = SkinLoader.getClassFromSkinFile(topArrow);
 			if(skinT == null){
 				skinT = new Skin() as DisplayObject;
 			}
@@ -170,7 +200,7 @@ package cn.flashk.controls.skin.sourceSkin
 		}
 		
 		private function initBottom():void{
-			var Skin:Class = SkinLoader.getClassFromSkinFile(SourceSkinLinkDefine.SCROLL_BAR_BOTTOM_ARR);
+			var Skin:Class = SkinLoader.getClassFromSkinFile(bottomArrow);
 			if(skinB == null){
 				skinB = new Skin() as DisplayObject;
 			}

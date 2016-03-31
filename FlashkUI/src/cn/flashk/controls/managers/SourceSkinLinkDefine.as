@@ -11,6 +11,7 @@ package cn.flashk.controls.managers
 		public static var SCROLL_BAR_TOP_ARR:String = "SkinScrollBarArrTop";
 		public static var SCROLL_BAR_BOTTOM_ARR:String = "SkinScrollBarArrBottom";
 		public static var SCROLL_BAR_BACKGROUND:String = "SkinScrollBarBackground";
+		public static var SCROLL_BAR_BACKGROUND_MASK:String = "SkinScrollBarBackgroundMask";
 		public static var LIST_ITEM_BACKGROUND:String = "SkinListItemBackground";
 		public static var COMBO_BOX:String = "SkinComboBox";
 		public static var COMBO_BOX_ARROW:String = "SkinComboBoxArrow";
@@ -32,7 +33,6 @@ package cn.flashk.controls.managers
 		public static var NUMERIC_STEPPER_DOWN:String = "SkinNumericStepperDown";
 		public static var DATA_GRID_TITLE:String = "SkinDataGridTitle";
 		public static var MENU_BAR_BACKGROUND:String = "SkinMenuBarBackground";
-		public static var SCROLL_BAR_BACKGROUND_MASK:String = "SkinScrollBarBackgroundMask";
 		public static var TREE_FLODER_ICON:String = "SkinFloderIcon";
 		public static var TREE_NODE_ICON:String = "SkinNodeIcon";
 		public static var TREE_CLOSED_ICON:String = "SkinClosedIconIcon";

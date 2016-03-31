@@ -23,6 +23,7 @@ package cn.flashk.controls.support
 			if (value == "" || value == null) {
 				return 0x000000;
 			}
+			var color:uint = uint(parseInt(value.slice(1), 16));
 			return uint(parseInt(value.slice(1), 16));
 		}
 		

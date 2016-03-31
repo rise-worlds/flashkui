@@ -5,13 +5,14 @@ package cn.flashk.controls
 	import cn.flashk.controls.managers.SkinManager;
 	import cn.flashk.controls.managers.SourceSkinLinkDefine;
 	import cn.flashk.controls.modeStyles.ButtonStyle;
+	import cn.flashk.controls.modeStyles.ScrollBarSkinSet;
 	import cn.flashk.controls.proxy.DataProvider;
 	import cn.flashk.controls.skin.ActionDrawSkin;
 	import cn.flashk.controls.skin.ComboBoxSkin;
 	import cn.flashk.controls.skin.sourceSkin.ComboBoxSourceSkin;
 	import cn.flashk.controls.support.ColorConversion;
 	import cn.flashk.controls.support.UIComponent;
-
+	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
@@ -40,17 +41,18 @@ package cn.flashk.controls
 		protected var initIndex:int;
 		protected var _dataProvider:DataProvider;
 
-		public function ComboBox()
+		public function ComboBox(skinSet:ScrollBarSkinSet=null)
 		{
 			super();
 
-			_compoWidth=100;
+			_compoWidth=120;
 			_compoHeight=21;
 			new ButtonStyle(styleSet);
-			_list=new List();
+			_list=new List(skinSet);
 			_list.setSize(_compoWidth, _rowCount * List.defaultItemHeight);
 			_list.addEventListener(Event.CHANGE, updateSelect);
 			_list.addEventListener("getSelectIndexData", setSelectLabel);
+			_list.selectedIndex = 0;
 			initMouseEvents();
 			txt=new TextField();
 			txt.x=5;
@@ -299,7 +301,15 @@ package cn.flashk.controls
 		{
 			if (_list.length == 0)
 				return;
+			if(_list.parent){
+				_list.parent.removeChild(_list);
+				return;
+			}
 			this.stage.addChild(_list);
+			var less:int=_rowCount;
+			if (_list.length < less)
+				less=_list.length;
+			_list.setSize(_compoWidth, less * List.defaultItemHeight + 2);
 			var po:Point=this.localToGlobal(new Point(0, _compoHeight + 1));
 			_list.x=int(po.x);
 			_list.y=po.y;
@@ -308,18 +318,16 @@ package cn.flashk.controls
 				_list.y=po.y - _compoHeight - _list.compoHeight - 1;
 			}
 			this.stage.addEventListener(MouseEvent.MOUSE_DOWN, checkRemove_list);
-			var less:int=_rowCount;
-			if (_list.length < less)
-				less=_list.length;
-			_list.setSize(_compoWidth, less * List.defaultItemHeight + 2);
 		}
 
 		private function checkRemove_list(event:MouseEvent):void
 		{
 			if (_list.mouseX < -5 || _list.mouseY <= -5 - _compoHeight || _list.mouseX > _list.compoWidth + 5 || _list.mouseY > _list.compoHeight + 5)
 			{
-				this.stage.removeEventListener(MouseEvent.MOUSE_DOWN, checkRemove_list);
-				this.stage.removeChild(_list);
+				UIComponent.stage.removeEventListener(MouseEvent.MOUSE_DOWN, checkRemove_list);
+				if(_list.parent){
+					UIComponent.stage.removeChild(_list);
+				}
 			}
 		}
 

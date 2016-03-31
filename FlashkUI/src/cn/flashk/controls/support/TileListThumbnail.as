@@ -1,18 +1,20 @@
 package cn.flashk.controls.support
 {
+	import cn.flashk.controls.Image;
+	import cn.flashk.controls.List;
+	import cn.flashk.controls.events.ListEvent;
+	import cn.flashk.controls.interfaces.ITileListItemRender;
+	import cn.flashk.controls.managers.DefaultStyle;
+	import cn.flashk.controls.managers.SkinThemeColor;
+	
 	import flash.display.Bitmap;
+	import flash.display.DisplayObject;
 	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
-	
-	import cn.flashk.controls.Image;
-	import cn.flashk.controls.List;
-	import cn.flashk.controls.interfaces.ITileListItemRender;
-	import cn.flashk.controls.managers.DefaultStyle;
-	import cn.flashk.controls.managers.SkinThemeColor;
 
 	public class TileListThumbnail extends Sprite implements ITileListItemRender
 	{
@@ -86,6 +88,23 @@ package cn.flashk.controls.support
 		
 		public function set list(value:List):void{
 			_list = value;
+			
+			if(value.itemDoubleClickEnabled == true)
+			{
+				this.doubleClickEnabled = true;
+				this.addEventListener(MouseEvent.DOUBLE_CLICK,onRenderDoubleClick);
+			}
+			this.addEventListener(MouseEvent.CLICK,onRenderClick);
+		}
+		
+		protected function onRenderDoubleClick(event:MouseEvent):void
+		{
+			DisplayObject(_list).dispatchEvent(new ListEvent(ListEvent.ITEM_DOUBLE_CLICK,this));
+		}
+		
+		protected function onRenderClick(event:MouseEvent):void
+		{
+			DisplayObject(_list).dispatchEvent(new ListEvent(ListEvent.ITEM_CLICK,this));
 		}
 		
 		public function set data(value:Object):void{

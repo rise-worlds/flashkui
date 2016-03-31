@@ -4,12 +4,13 @@
 	import cn.flashk.controls.interfaces.IListItemRender;
 	import cn.flashk.controls.managers.SkinLoader;
 	import cn.flashk.controls.managers.SkinManager;
+	import cn.flashk.controls.managers.SkinThemeColor;
 	import cn.flashk.controls.managers.SourceSkinLinkDefine;
 	import cn.flashk.controls.managers.StyleManager;
+	import cn.flashk.controls.modeStyles.ScrollBarSkinSet;
 	import cn.flashk.controls.proxy.DataProvider;
 	import cn.flashk.controls.skin.ActionDrawSkin;
 	import cn.flashk.controls.skin.ListSkin;
-	import cn.flashk.controls.managers.SkinThemeColor;
 	import cn.flashk.controls.skin.sourceSkin.ListSourceSkin;
 	import cn.flashk.controls.skin.sourceSkin.SourceSkin;
 	import cn.flashk.controls.support.ColorConversion;
@@ -23,6 +24,7 @@
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
+	import flash.utils.getTimer;
 	
 	/**
 	 * 当List的selectIndex值改变时触发
@@ -82,7 +84,7 @@
 		protected var scrollBar:VScrollBar;
 		protected var _itemRender:Class;
 		protected var _allowMultipleSelection:Boolean = false;
-		protected var _selectedIndex:uint;
+		protected var _selectedIndex:int = -1;
 		protected var isFouceInMe:Boolean = false;
 		protected var _dataProvider:Object;
 		protected var scrollBarLastVisible:Boolean = false;
@@ -98,7 +100,12 @@
 		protected var _itemDoubleClickEnabled:Boolean = false;
 		protected var boxSelectControler:ItemsSelectControl;
 		
-		public function List()
+		/**
+		 * 
+		 * @param skinSet 在swf皮肤模式下要使用的滚动条皮肤的库链接名设定
+		 * 
+		 */
+		public function List(skinSet:ScrollBarSkinSet=null)
 		{
 			super();
             
@@ -117,7 +124,7 @@
 			items = new Sprite();
 			items.y= 1;
 			this.addChild(items);
-			scrollBar = new VScrollBar();
+			scrollBar = new VScrollBar(skinSet);
 			scrollBar.setTarget(items,false,_compoWidth,_compoHeight-2);
 			scrollBar.smoothNum = StyleManager.listScrollBarSmoothNum;
 			scrollBar.updateSize(100);
@@ -489,7 +496,7 @@
 		 */ 
 		public function addItemAt(item:Object,index:uint):void
 		{
-			var render:DisplayObject = new _itemRender() as DisplayObject;
+			var render:InteractiveObject = new _itemRender() as InteractiveObject;
 			if(isDpAdd == false)
 			{
 				_dataProvider.addItemAt(item,index);
@@ -502,9 +509,9 @@
 				itemWidth =scrollBar.x;
 			}
 			IListItemRender(render).setSize(itemWidth,0);
-			InteractiveObject(render).addEventListener(MouseEvent.CLICK,itemClick);
-			InteractiveObject(render).addEventListener(MouseEvent.ROLL_OVER,itemMouseOver);
-			InteractiveObject(render).addEventListener(MouseEvent.ROLL_OUT,itemMouseOut);
+			render.addEventListener(MouseEvent.CLICK,itemClick);
+			render.addEventListener(MouseEvent.ROLL_OVER,itemMouseOver);
+			render.addEventListener(MouseEvent.ROLL_OUT,itemMouseOut);
 			items.addChildAt(render,index);
 			if(index == _selectedIndex)
 			{
@@ -539,6 +546,21 @@
 			{
 				_isNeedUpdate = false;
 				resetScrollBar();
+				UIComponent.stage.removeEventListener(Event.RENDER,reAlign);
+				
+				var render:DisplayObject;
+				var itemWidth:Number = _compoWidth;
+				if(scrollBar.visible == true)
+				{
+					itemWidth =scrollBar.x;
+				}
+				for(var i:int = 0;i<items.numChildren;i++)
+				{
+					render = items.getChildAt(i);
+					if(render.width != itemWidth){
+						IListItemRender(render).setSize(itemWidth,0);
+					}
+				}
 			}
 		}
 		

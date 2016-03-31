@@ -46,9 +46,20 @@ package cn.flashk.controls
 		protected var _smothStep:uint = 15;
 		protected var _smothLess:Number = 3.1;
 		protected var _isClickMoveDispathEvent:Boolean = true;
+		protected var _showDragSpace:Boolean = true;
+		protected var _skinLinkage:String;
+		protected var _asSkinClass:Class;
 		
-		public function Slider()
+		public function Slider(skinLinkage:String="",asSkinClass:Class=null)
 		{
+			_skinLinkage = skinLinkage;
+			if(_skinLinkage == ""){
+				_skinLinkage = SourceSkinLinkDefine.SLIDER;
+			}
+			_asSkinClass = asSkinClass;
+			if(_asSkinClass == null){
+				_asSkinClass = SliderSkin;
+			}
 			super();
 			_compoWidth = 200;
 			_compoHeight = 4;
@@ -56,6 +67,19 @@ package cn.flashk.controls
 			setSize(_compoWidth, _compoHeight);
 		}
 		
+		public function get showDragSpace():Boolean
+		{
+			return _showDragSpace;
+		}
+
+		public function set showDragSpace(value:Boolean):void
+		{
+			_showDragSpace = value;
+			if(skin){
+				skin.reDraw();
+			}
+		}
+
 		public function get smothStep():uint
 		{
 			return _smothStep;
@@ -218,11 +242,11 @@ package cn.flashk.controls
 		}
 		
 		override public function setDefaultSkin():void {
-			setSkin(SliderSkin);
+			setSkin(_asSkinClass);
 		}
 		
 		override public function setSourceSkin():void {
-			setSkin(SkinLoader.getClassFromSkinFile(SourceSkinLinkDefine.SLIDER));
+			setSkin(SkinLoader.getClassFromSkinFile(_skinLinkage));
 		}
 		
 		override public function setSkin(Skin:Class):void {
